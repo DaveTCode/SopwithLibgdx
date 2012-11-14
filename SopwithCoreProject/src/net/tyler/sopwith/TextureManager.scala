@@ -8,7 +8,7 @@ object TextureManager {
 
   case object LevelBackground extends InternalTexture("images/level_background.png")
   case object BombTexture extends InternalTexture("images/bomb.png")
-  case object PlaneTexture extends InternalTexture("images/plane.png")
+  case object PlaneTexture extends InternalTexture("images/biplane.png")
   case object BuildingLiveTexture extends InternalTexture("images/building_live.png")
   case object BuildingDestroyedTexture extends InternalTexture("images/building_destroyed.png")
   
