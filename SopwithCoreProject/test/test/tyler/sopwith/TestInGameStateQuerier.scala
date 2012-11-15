@@ -9,8 +9,8 @@ import net.tyler.messaging.Message
  * Test harness for the in game state querier to allow inserting messages
  * directly into the queue.
  */
-class TestInGameStateQuerier(planeState: PlaneState, buildings: List[Building]) 
-  extends InGameStateQuerier(planeState: PlaneState, buildings: List[Building]) {
+class TestInGameStateQuerier(planeState: PlaneState, buildings: List[Building], startTime: Long) 
+  extends InGameStateQuerier(planeState, buildings, startTime) {
 
   def addMessage(message: Message) { Buffer += message }
 }

@@ -1,9 +1,86 @@
 package net.tyler.sopwith
 
+import scala.annotation.tailrec
+import scala.collection.immutable.List
+import net.tyler.math.ImmutableVector2f
+import net.tyler.messaging.Message
 import net.tyler.messaging.StateQuerier
+import scala.math
+import scala.Math$
+import scala.Math
 
-class InGameStateQuerier(planeState: PlaneState, buildings: List[Building]) extends StateQuerier {
+class InGameStateQuerier(val planeState: PlaneState, 
+                         val buildings: List[Building],
+                         val createTime: Long) extends StateQuerier {
+  
+  private def planeVelocityEvents(t: Long) = messageEvents[PlaneVelocityChange](t)
+  private def planeAngularVelocityEvents(t: Long) = messageEvents[PlaneAngularVelocityChange](t)
+  private def planeOrientationEvents(t: Long) = messageEvents[PlaneOrientationFlip](t)
 
+  /**
+   * The planes velocity at time t.
+   */
+  private def planeVelocity(t: Long): ImmutableVector2f = 
+    planeVelocityEvents(t).last.velocity
+    
+  /**
+   * The planes position at time t.
+   */
+  private def planePosition(t: Long): ImmutableVector2f = {
+    @tailrec def recurCalcPosition(velocityChanges: Seq[PlaneVelocityChange],
+                                   currentPos: ImmutableVector2f,
+                                   currentVel: ImmutableVector2f,
+                                   currentTime: Long): ImmutableVector2f = velocityChanges match {
+      case Nil => {
+        currentPos + currentVel.scale((t - currentTime) / 1000f)
+      }
+      case head :: tail => {
+        recurCalcPosition(tail, currentPos + currentVel.scale((head.t - currentTime) / 1000f), head.velocity, head.t)
+      }
+    }
+    
+    recurCalcPosition(planeVelocityEvents(t).sortWith((e1: PlaneVelocityChange, e2: PlaneVelocityChange) => e1.t < e2.t),
+                      planeState.position,
+                      planeState.velocity,
+                      createTime)
+  }
+  
+  /**
+   * The planes angular velocity at time t.
+   */
+  private def planeAngularVelocity(t: Long): Float =
+    planeAngularVelocityEvents(t).last.velocity
+    
+  /**
+   * The planes angle at time t.
+   */
+  private def planeAngle(t: Long): Float = {
+    @tailrec def recurCalcAngle(velocityChanges: Seq[PlaneAngularVelocityChange],
+                                currentAngle: Float,
+                                currentAngularVelocity: Float,
+                                currentTime: Long): Float = velocityChanges match {
+      case Nil => {
+        currentAngle + currentAngularVelocity * ((t - currentTime) / 1000f)
+      }
+      case head :: tail => {
+        recurCalcAngle(tail, currentAngle + currentAngularVelocity * ((t - currentTime) / 1000f), head.velocity, head.t)
+      }
+    }
+    
+    val unadjAngle = recurCalcAngle(planeAngularVelocityEvents(t).sortWith((e1: PlaneAngularVelocityChange, e2: PlaneAngularVelocityChange) => e1.t < e2.t), 
+                                    planeState.angle, 
+                                    planeState.angularVelocity, 
+                                    createTime) % scala.Math.Pi * 2f
+                                    
+    if (unadjAngle < 0f) (unadjAngle + scala.Math.Pi * 2f).toFloat else unadjAngle.toFloat
+  }
+  
+  /**
+   * The orientation of the plane at time t.
+   */
+  private def planeOrientation(t: Long): Boolean =
+    planeOrientationEvents(t).size % 2 == 1
+    
   def liveBombs(t: Long): List[BombState] = {
     List()
   }
@@ -12,11 +89,22 @@ class InGameStateQuerier(planeState: PlaneState, buildings: List[Building]) exte
     5
   }
   
-  def planeState(t: Long): PlaneState = {
-    planeState
-  }
+  /**
+   * The full plane state at any given time t. This is used to draw the plane
+   * at the correct location and to determine whether any collisions have 
+   * occurred.
+   */
+  def planeState(t: Long): PlaneState =
+    new PlaneState(planePosition(t), planeVelocity(t), 
+                   planeAngle(t), planeAngularVelocity(t), 
+                   planeOrientation(t))
   
-  def buildings(t: Long): List[BuildingState] = {
+  /**
+   * A list of all the buildings with their current state at a give time t.
+   * 
+   * Used to determine where to draw buildings and whether anything has hit 
+   * them on an update loop.
+   */
+  def buildings(t: Long): List[BuildingState] =
     buildings.map((building: Building) => new BuildingState(building, true))
-  }
 }

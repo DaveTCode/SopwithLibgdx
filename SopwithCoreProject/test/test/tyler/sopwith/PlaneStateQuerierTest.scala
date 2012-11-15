@@ -11,10 +11,10 @@ class PlaneStateQuerierTest {
 
   private val VEL_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), 0f, 0f)
+  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), 0f, 0f, false)
   
   @Test def initialState() {
-    val querier = new TestInGameStateQuerier(initialPlaneState, List())
+    val querier = new TestInGameStateQuerier(initialPlaneState, List(), 0)
     
     assertEquals(querier.planeState(0), initialPlaneState)
     assertEquals(querier.planeState(100).velocity, initialPlaneState.velocity)
@@ -22,7 +22,7 @@ class PlaneStateQuerierTest {
   }
   
   @Test def singleVelocityChange() {
-    val querier = new TestInGameStateQuerier(initialPlaneState, List())
+    val querier = new TestInGameStateQuerier(initialPlaneState, List(), 0)
     
     val newVelocity = new ImmutableVector2f(-1f, -0.5f)
     querier.addMessage(new PlaneVelocityChange(newVelocity, 10))
