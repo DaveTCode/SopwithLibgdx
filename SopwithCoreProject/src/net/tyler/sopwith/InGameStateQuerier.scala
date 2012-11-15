@@ -3,25 +3,31 @@ package net.tyler.sopwith
 import scala.annotation.tailrec
 import scala.collection.immutable.List
 import net.tyler.math.ImmutableVector2f
-import net.tyler.messaging.Message
 import net.tyler.messaging.StateQuerier
-import scala.math
-import scala.Math$
-import scala.Math
+import net.tyler.messaging.MessagingComponent
+import net.tyler.messaging.MessagePassing
+import net.tyler.messaging.Message
 
 class InGameStateQuerier(val planeState: PlaneState, 
                          val buildings: List[Building],
-                         val createTime: Long) extends StateQuerier {
+                         val createTime: Long,
+                         messagingComponent: MessagingComponent) extends StateQuerier(messagingComponent) {
   
   private def planeVelocityEvents(t: Long) = messageEvents[PlaneVelocityChange](t)
   private def planeAngularVelocityEvents(t: Long) = messageEvents[PlaneAngularVelocityChange](t)
   private def planeOrientationEvents(t: Long) = messageEvents[PlaneOrientationFlip](t)
+  
+  private def bombReleaseEvents(t:Long) = messageEvents[BombReleased](t)
+  private def bombDestroyedEvents(t: Long) = messageEvents[BombDestroyed](t)
 
   /**
    * The planes velocity at time t.
    */
-  private def planeVelocity(t: Long): ImmutableVector2f = 
-    planeVelocityEvents(t).last.velocity
+  private def planeVelocity(t: Long): ImmutableVector2f = {
+    val events = planeVelocityEvents(t)
+    
+    if (events.isEmpty) planeState.velocity else events.last.velocity
+  } 
     
   /**
    * The planes position at time t.
@@ -48,8 +54,11 @@ class InGameStateQuerier(val planeState: PlaneState,
   /**
    * The planes angular velocity at time t.
    */
-  private def planeAngularVelocity(t: Long): Float =
-    planeAngularVelocityEvents(t).last.velocity
+  private def planeAngularVelocity(t: Long): Float = {
+    val events = planeAngularVelocityEvents(t)
+    
+    if (events.isEmpty) planeState.angularVelocity else events.last.velocity
+  }
     
   /**
    * The planes angle at time t.
@@ -70,9 +79,9 @@ class InGameStateQuerier(val planeState: PlaneState,
     val unadjAngle = recurCalcAngle(planeAngularVelocityEvents(t).sortWith((e1: PlaneAngularVelocityChange, e2: PlaneAngularVelocityChange) => e1.t < e2.t), 
                                     planeState.angle, 
                                     planeState.angularVelocity, 
-                                    createTime) % scala.Math.Pi * 2f
+                                    createTime) % scala.math.Pi * 2f
                                     
-    if (unadjAngle < 0f) (unadjAngle + scala.Math.Pi * 2f).toFloat else unadjAngle.toFloat
+    if (unadjAngle < 0f) (unadjAngle + scala.math.Pi * 2f).toFloat else unadjAngle.toFloat
   }
   
   /**
@@ -81,8 +90,28 @@ class InGameStateQuerier(val planeState: PlaneState,
   private def planeOrientation(t: Long): Boolean =
     planeOrientationEvents(t).size % 2 == 1
     
-  def liveBombs(t: Long): List[BombState] = {
-    List()
+  /**
+   * A list of all the bombs which are still alive at time t. 
+   */
+  def liveBombs(t: Long): Seq[BombState] = {
+    val validBombs = bombReleaseEvents(t).filter((event: BombReleased) => {
+      bombDestroyedEvents(t).count(_.releasePosition == event.releasePosition) == 0
+    })
+    
+    validBombs.map(calculateBombState(_, t))
+  }
+  
+  /**
+   * A single bombs state can be derived from its initial release point and the
+   * current time (since the only force acting on it is from gravity).
+   */
+  private def calculateBombState(releasedEvent: BombReleased, t: Long): BombState = {
+    val deltaT = (t - releasedEvent.t) / 1000f
+    val acc = Configuration.BOMB_ACCELERATION
+    val vel = new ImmutableVector2f(0f, scala.math.min(acc * deltaT, Configuration.BOMB_TERMINAL_VEL))
+    val pos = new ImmutableVector2f(releasedEvent.releasePosition.x, vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
+    
+    new BombState(pos, vel)
   }
   
   def bombsRemaining(t: Long): Int = {

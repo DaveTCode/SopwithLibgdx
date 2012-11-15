@@ -8,7 +8,7 @@ import com.badlogic.gdx.Gdx
 import net.tyler.sopwith.Configuration
 
 class MessagePassing {
-  private val registeredComponents = new HashMap[Manifest[Message], 
+  private val registeredComponents = new HashMap[Class[_ <: Message], 
                                                  ArrayBuffer[MessagingComponent]]
   
   /**
@@ -17,8 +17,8 @@ class MessagePassing {
    * @param component
    * @param messageType
    */
-  def register(component : MessagingComponent, messageType : Manifest[Message]) {
-    Gdx.app.log(Configuration.LOG, "Registering component " + component.toString + " for message type " + messageType)
+  def register(component : MessagingComponent, messageType : Class[_ <: Message]) {
+    Gdx.app.log(Configuration.LOG, "Registering component " + component.toString + " for message type ")
     val componentList = registeredComponents.getOrElseUpdate(messageType, new ArrayBuffer[MessagingComponent])
 
     componentList += component
@@ -32,8 +32,9 @@ class MessagePassing {
    * @param message
    */
   def send(message: Message) {
-    val componentList = registeredComponents.getOrElse(Manifest.classType(message.getClass),
+    val componentList = registeredComponents.getOrElse(message.getClass,
                                                        new ArrayBuffer[MessagingComponent])
+    Gdx.app.log(Configuration.LOG, "Received message -> " + Manifest.classType(message.getClass))
     Gdx.app.log(Configuration.LOG, "Received message -> " + message.toString)
 
     componentList.foreach((component: MessagingComponent) => {
