@@ -1,6 +1,7 @@
 package net.tyler.messaging
 
 import scala.collection.mutable.ArrayBuffer
+import scala.reflect.ClassManifest
 
 abstract class StateQuerier(val messagingComponent: MessagingComponent) {
   
@@ -18,7 +19,8 @@ abstract class StateQuerier(val messagingComponent: MessagingComponent) {
    * Returns a list of all events which occurred before a given time t and that
    * match a particular message type.
    */
-  def messageEvents[T <: Message](t: Long) = {
-    eventsPreTickVal(t) collect { case message: T => message }
-  }
+  def messageEvents[T <: Message](t: Long)(implicit m: Manifest[T]) =
+    eventsPreTickVal(t).collect({
+      case message if (ClassManifest.singleType(message) <:< m) => message
+    }).asInstanceOf[Seq[T]]
 }

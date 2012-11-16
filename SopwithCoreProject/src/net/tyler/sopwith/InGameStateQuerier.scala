@@ -9,7 +9,7 @@ import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.Message
 
 class InGameStateQuerier(val planeState: PlaneState, 
-                         val buildings: List[Building],
+                         val buildings: Iterable[Building],
                          val createTime: Long,
                          messagingComponent: MessagingComponent) extends StateQuerier(messagingComponent) {
   
@@ -33,7 +33,7 @@ class InGameStateQuerier(val planeState: PlaneState,
    * The planes position at time t.
    */
   private def planePosition(t: Long): ImmutableVector2f = {
-    @tailrec def recurCalcPosition(velocityChanges: Seq[PlaneVelocityChange],
+    @tailrec def recurCalcPosition(velocityChanges: List[PlaneVelocityChange],
                                    currentPos: ImmutableVector2f,
                                    currentVel: ImmutableVector2f,
                                    currentTime: Long): ImmutableVector2f = velocityChanges match {
@@ -45,7 +45,7 @@ class InGameStateQuerier(val planeState: PlaneState,
       }
     }
     
-    recurCalcPosition(planeVelocityEvents(t).sortWith((e1: PlaneVelocityChange, e2: PlaneVelocityChange) => e1.t < e2.t),
+    recurCalcPosition(planeVelocityEvents(t).sortBy(_.ticks).toList,
                       planeState.position,
                       planeState.velocity,
                       createTime)
@@ -64,7 +64,7 @@ class InGameStateQuerier(val planeState: PlaneState,
    * The planes angle at time t.
    */
   private def planeAngle(t: Long): Float = {
-    @tailrec def recurCalcAngle(velocityChanges: Seq[PlaneAngularVelocityChange],
+    @tailrec def recurCalcAngle(velocityChanges: List[PlaneAngularVelocityChange],
                                 currentAngle: Float,
                                 currentAngularVelocity: Float,
                                 currentTime: Long): Float = velocityChanges match {
@@ -76,7 +76,7 @@ class InGameStateQuerier(val planeState: PlaneState,
       }
     }
     
-    val unadjAngle = recurCalcAngle(planeAngularVelocityEvents(t).sortWith((e1: PlaneAngularVelocityChange, e2: PlaneAngularVelocityChange) => e1.t < e2.t), 
+    val unadjAngle = recurCalcAngle(planeAngularVelocityEvents(t).sortBy(_.ticks).toList,
                                     planeState.angle, 
                                     planeState.angularVelocity, 
                                     createTime) % scala.math.Pi * 2f
@@ -93,7 +93,7 @@ class InGameStateQuerier(val planeState: PlaneState,
   /**
    * A list of all the bombs which are still alive at time t. 
    */
-  def liveBombs(t: Long): Seq[BombState] = {
+  def liveBombs(t: Long): Iterable[BombState] = {
     val validBombs = bombReleaseEvents(t).filter((event: BombReleased) => {
       bombDestroyedEvents(t).count(_.releasePosition == event.releasePosition) == 0
     })
@@ -114,9 +114,12 @@ class InGameStateQuerier(val planeState: PlaneState,
     new BombState(pos, vel)
   }
   
-  def bombsRemaining(t: Long): Int = {
-    5
-  }
+  /**
+   * DAT - Should decide what the game design is here at some point.
+   * 
+   * Returns the number of bombs that the plane has left at any given point.
+   */
+  def bombsRemaining(t: Long): Int = 5
   
   /**
    * The full plane state at any given time t. This is used to draw the plane
@@ -134,6 +137,6 @@ class InGameStateQuerier(val planeState: PlaneState,
    * Used to determine where to draw buildings and whether anything has hit 
    * them on an update loop.
    */
-  def buildings(t: Long): List[BuildingState] =
+  def buildings(t: Long): Iterable[BuildingState] =
     buildings.map((building: Building) => new BuildingState(building, true))
 }
