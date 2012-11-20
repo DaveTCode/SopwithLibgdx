@@ -18,6 +18,5 @@ case class ImmutableVector2f(val x: Float, val y: Float) {
   
   def dot(v: ImmutableVector2f): Float = x * v.x + y * v.y
 
-  override def toString = "(" + x.toString + "," + y.toString + ")"
-  
+  override def toString = "(" + x.toString + "," + y.toString + ")" 
 }
