@@ -1,17 +1,19 @@
 package test.tyler.sopwith
 
+import scala.collection.mutable.ArrayBuffer
+
 import org.junit.Assert._
 import org.junit.Test
-import net.tyler.sopwith.PlaneVelocityChange
-import net.tyler.sopwith.PlaneAngularVelocityChange
+
+import net.tyler.math.ImmutableVector2f
+import net.tyler.messaging.MessagePassing
+import net.tyler.messaging.MessagingComponent
+import net.tyler.messaging.StateQuerier
 import net.tyler.sopwith.BombDestroyed
 import net.tyler.sopwith.BombReleased
 import net.tyler.sopwith.BuildingDestroyed
-import net.tyler.messaging.MessagePassing
-import net.tyler.messaging.MessagingComponent
-import net.tyler.sopwith.InGameStateQuerier
-import net.tyler.math.ImmutableVector2f
-import net.tyler.messaging.StateQuerier
+import net.tyler.sopwith.PlaneAngularVelocityChange
+import net.tyler.sopwith.PlaneVelocityChange
 
 /**
  * Test class for checking that the right set of messages are returned from the
@@ -40,6 +42,33 @@ class MessageQueueTest {
       assertEquals(stateQuerier.eventsPreTickVal(1959203).size, 0)
       assertEquals(stateQuerier.eventsPreTickVal(9999999), messagingComponent.Buffer)
       assertEquals(stateQuerier.eventsPreTickVal(0).size, 0)
+    }
+  }
+  
+  @Test def messageTypes() {
+    new ApplicationTester with StateTester {
+      val pos = new ImmutableVector2f(-100f, -100f)
+      
+      messagePassing.send(new BombReleased(pos, 1029478))
+      messagePassing.send(new BombDestroyed(pos, 98123))
+      
+      assertEquals(stateQuerier.messageEvents[BombReleased](99999999).size, 1)
+      assertEquals(stateQuerier.messageEvents[BombDestroyed](99999999).size, 1)
+    }
+  }
+  
+  @Test def messageOrdering() {
+    new ApplicationTester with StateTester {
+      val pos = new ImmutableVector2f(-100f, -100f)
+      val msg1 = new BombReleased(pos, 1)
+      val msg2 = new BombReleased(pos, 10923)
+      val msg3 = new BombReleased(pos, 123)
+      
+      messagePassing.send(msg1)
+      messagePassing.send(msg2)
+      messagePassing.send(msg3)
+      
+      assertEquals(ArrayBuffer(msg1, msg2, msg3), stateQuerier.messageEvents[BombReleased](11111))
     }
   }
 }

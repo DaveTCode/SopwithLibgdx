@@ -108,7 +108,7 @@ class InGameStateQuerier(val planeState: PlaneState,
   private def calculateBombState(releasedEvent: BombReleased, t: Long): BombState = {
     val deltaT = (t - releasedEvent.t) / 1000f
     val acc = Configuration.BOMB_ACCELERATION
-    val vel = new ImmutableVector2f(0f, scala.math.min(acc * deltaT, Configuration.BOMB_TERMINAL_VEL))
+    val vel = new ImmutableVector2f(0f, acc * deltaT)
     val pos = new ImmutableVector2f(releasedEvent.releasePosition.x, vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
     
     new BombState(pos, vel)

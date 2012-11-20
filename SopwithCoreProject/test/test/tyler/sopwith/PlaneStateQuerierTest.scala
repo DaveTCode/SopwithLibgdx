@@ -14,6 +14,10 @@ import net.tyler.sopwith.PlaneAngularVelocityChange
 import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.PlaneVelocityChange
 
+/**
+ * Test class for checking that the plane updates it's state correctly under
+ * various message circumstances.
+ */
 class PlaneStateQuerierTest {
 
   private val FP_DELTA = 0.01
@@ -35,9 +39,9 @@ class PlaneStateQuerierTest {
   @Test def initialState() {
     
     new ApplicationTester with StateTester {
-      assertEquals(querier.planeState(0), initialPlaneState)
-      assertEquals(querier.planeState(100).velocity, initialPlaneState.velocity)
-      assertEquals(querier.planeState(100).angularVelocity, initialPlaneState.angularVelocity, FP_DELTA)
+      assertEquals(initialPlaneState, querier.planeState(0))
+      assertEquals(initialPlaneState.velocity, querier.planeState(100).velocity)
+      assertEquals(initialPlaneState.angularVelocity, querier.planeState(100).angularVelocity, FP_DELTA)
     }
   }
   
@@ -46,8 +50,8 @@ class PlaneStateQuerierTest {
       val newVelocity = new ImmutableVector2f(-1f, -0.5f)
       messagePassing.send(new PlaneVelocityChange(newVelocity, 10))
       
-      assertEquals(querier.planeState(9).velocity, initialPlaneState.velocity)
-      assertEquals(querier.planeState(11).velocity, newVelocity)
+      assertEquals(initialPlaneState.velocity, querier.planeState(9).velocity)
+      assertEquals(newVelocity, querier.planeState(11).velocity)
     }
   }
   
@@ -56,11 +60,12 @@ class PlaneStateQuerierTest {
       val newVelocity = new ImmutableVector2f(-10f, 7f)
       messagePassing.send(new PlaneVelocityChange(newVelocity, 10))
       
-      assertEquals(querier.planeState(9).position, initialPlaneState.position)
+      assertEquals(initialPlaneState.position.x + initialPlaneState.velocity.x * 0.009f, querier.planeState(9).position.x, FP_DELTA)
+      assertEquals(initialPlaneState.position.y + initialPlaneState.velocity.y * 0.009f, querier.planeState(9).position.y, FP_DELTA)
       
       val positionAfter1000ms = querier.planeState(1010).position
-      assertEquals(positionAfter1000ms.x, -10f, FP_DELTA)
-      assertEquals(positionAfter1000ms.y, 7f, FP_DELTA)
+      assertEquals((initialPlaneState.position.x + initialPlaneState.velocity.x * 0.01f) - 10f, positionAfter1000ms.x, FP_DELTA)
+      assertEquals((initialPlaneState.position.y + initialPlaneState.velocity.y * 0.01f) + 7f, positionAfter1000ms.y, FP_DELTA)
     }
   }
 }
