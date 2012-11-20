@@ -19,6 +19,8 @@ class InGameStateQuerier(val planeState: PlaneState,
   
   private def bombReleaseEvents(t:Long) = messageEvents[BombReleased](t)
   private def bombDestroyedEvents(t: Long) = messageEvents[BombDestroyed](t)
+  
+  private def buildingDestroyedEvents(t: Long) = messageEvents[BuildingDestroyed](t)
 
   /**
    * The planes velocity at time t.
@@ -138,5 +140,11 @@ class InGameStateQuerier(val planeState: PlaneState,
    * them on an update loop.
    */
   def buildings(t: Long): Iterable[BuildingState] =
-    buildings.map((building: Building) => new BuildingState(building, true))
+    buildings.map((building: Building) => new BuildingState(building, isBuildingLive(building, t)))
+  
+  /**
+   * Check whether the given building was destroyed at time t.
+   */
+  private def isBuildingLive(building: Building, t: Long): Boolean = 
+    buildingDestroyedEvents(t).count(_.building == building) == 0
 }
