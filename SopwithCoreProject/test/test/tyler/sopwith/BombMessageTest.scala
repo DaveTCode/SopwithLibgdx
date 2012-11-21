@@ -49,7 +49,7 @@ class BombMessageTest {
       assertEquals(msg.velocity.x, 0f, FP_DELTA)
       assertEquals(msg.velocity.y, Configuration.BOMB_ACCELERATION, FP_DELTA)
       assertEquals(msg.position.x, 10f, FP_DELTA)
-      assertEquals(msg.position.y, 1.5f * Configuration.BOMB_ACCELERATION, FP_DELTA)
+      assertEquals(msg.position.y, 100f + 1.5f * Configuration.BOMB_ACCELERATION, FP_DELTA)
     }
   }
   

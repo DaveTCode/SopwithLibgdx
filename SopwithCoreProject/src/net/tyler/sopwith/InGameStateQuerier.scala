@@ -7,6 +7,7 @@ import net.tyler.messaging.StateQuerier
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.Message
+import com.badlogic.gdx.Gdx
 
 class InGameStateQuerier(val initPlaneState: PlaneState, 
                          val initBuildings: Iterable[Building],
@@ -112,7 +113,8 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
     val deltaT = (t - releasedEvent.t) / 1000f
     val acc = Configuration.BOMB_ACCELERATION
     val vel = new ImmutableVector2f(0f, acc * deltaT)
-    val pos = new ImmutableVector2f(releasedEvent.releasePosition.x, vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
+    val pos = new ImmutableVector2f(releasedEvent.releasePosition.x, 
+                                    releasedEvent.releasePosition.y + vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
     
     new BombState(pos, vel, releasedEvent.releasePosition)
   }

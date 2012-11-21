@@ -34,7 +34,6 @@ class MessagePassing {
   def send(message: Message) {
     val componentList = registeredComponents.getOrElse(message.getClass,
                                                        new ArrayBuffer[MessagingComponent])
-    Gdx.app.log(Configuration.LOG, "Received message -> " + Manifest.classType(message.getClass))
     Gdx.app.log(Configuration.LOG, "Received message -> " + message.toString)
 
     componentList.foreach((component: MessagingComponent) => {
