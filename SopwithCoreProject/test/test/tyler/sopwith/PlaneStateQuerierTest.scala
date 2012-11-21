@@ -64,8 +64,8 @@ class PlaneStateQuerierTest {
       assertEquals(initialPlaneState.position.y + initialPlaneState.velocity.y * 0.009f, querier.planeState(9).position.y, FP_DELTA)
       
       val positionAfter1000ms = querier.planeState(1010).position
-      assertEquals((initialPlaneState.position.x + initialPlaneState.velocity.x * 0.01f) - 10f, positionAfter1000ms.x, FP_DELTA)
-      assertEquals((initialPlaneState.position.y + initialPlaneState.velocity.y * 0.01f) + 7f, positionAfter1000ms.y, FP_DELTA)
+      assertEquals((initialPlaneState.position.x + initialPlaneState.velocity.x * 0.01f) + newVelocity.x, positionAfter1000ms.x, FP_DELTA)
+      assertEquals((initialPlaneState.position.y + initialPlaneState.velocity.y * 0.01f) + newVelocity.y, positionAfter1000ms.y, FP_DELTA)
     }
   }
 }
