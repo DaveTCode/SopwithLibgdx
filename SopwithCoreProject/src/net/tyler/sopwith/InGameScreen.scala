@@ -23,6 +23,7 @@ class InGameScreen extends Screen {
                                        TimeUtils.millis,
                                        messagingComponent)
   val renderer = new InGameRenderer(querier)
+  val inputProcessor = new InGameInputProcessor(querier, messagePassing)
   
   def render(dt: Float) {
     renderer.renderLevel
