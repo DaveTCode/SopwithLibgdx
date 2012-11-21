@@ -30,7 +30,7 @@ class BuildingMessageTest {
     val building2 = new Building(new ImmutableVector2f(50,-100))
     val building3 = new Building(new ImmutableVector2f(1,-23))
     
-    val querier = new InGameStateQuerier(null, List(building1, building2, building3), 0, messagingComponent)
+    val querier = new InGameStateQuerier(null, List(building1, building2, building3), 5, 0, messagingComponent)
   }
   
   @Test def testBuildingCreation {

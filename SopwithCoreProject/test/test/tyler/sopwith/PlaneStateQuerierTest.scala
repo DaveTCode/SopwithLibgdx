@@ -33,7 +33,7 @@ class PlaneStateQuerierTest {
     val messagePassing = new MessagePassing
     val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
     
-    val querier = new InGameStateQuerier(initialPlaneState, List(), 0, messagingComponent)
+    val querier = new InGameStateQuerier(initialPlaneState, List(), 5, 0, messagingComponent)
   }
   
   @Test def initialState() {

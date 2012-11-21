@@ -9,7 +9,8 @@ import com.badlogic.gdx.utils.TimeUtils
  * Class is responsible for handling input device polling and converting the
  * results into state change messages to pass back to the game model.
  */
-class InGameInputProcessor(val querier: InGameStateQuerier, val messagePassing: MessagePassing) {
+class InGameInputProcessor(private val querier: InGameStateQuerier, 
+                           private val messagePassing: MessagePassing) {
 
   /**
    * Called once per render loop to process any new input and convert it into

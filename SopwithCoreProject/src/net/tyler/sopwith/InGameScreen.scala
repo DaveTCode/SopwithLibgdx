@@ -19,13 +19,16 @@ class InGameScreen extends Screen {
   val querier = new InGameStateQuerier(new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
                                                       new ImmutableVector2f(0f, 0f),
                                                       0f, 0f, false),
-                                       List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))), 
+                                       List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
+                                       Configuration.INIT_BOMBS,
                                        TimeUtils.millis,
                                        messagingComponent)
   val renderer = new InGameRenderer(querier)
   val inputProcessor = new InGameInputProcessor(querier, messagePassing)
   
   def render(dt: Float) {
+    inputProcessor.processInput
+    
     renderer.renderLevel
   }
   

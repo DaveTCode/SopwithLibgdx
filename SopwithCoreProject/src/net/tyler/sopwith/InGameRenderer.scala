@@ -6,7 +6,7 @@ import net.tyler.sopwith.TextureManager._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.TimeUtils
 
-class InGameRenderer(val querier: InGameStateQuerier) {
+class InGameRenderer(private val querier: InGameStateQuerier) {
 
   private val camera = new OrthographicCamera(Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
   private val spriteBatch = new SpriteBatch(100)
