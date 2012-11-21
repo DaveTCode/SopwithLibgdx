@@ -34,7 +34,7 @@ class BombMessageTest {
     val messagePassing = new MessagePassing
     val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
     
-    val querier = new InGameStateQuerier(initialPlaneState, List(), 0, messagingComponent)
+    val querier = new InGameStateQuerier(initialPlaneState, List(), 5, 0, messagingComponent)
   }
   
   @Test def oneLiveBomb {
@@ -51,5 +51,18 @@ class BombMessageTest {
       assertEquals(msg.position.x, 10f, FP_DELTA)
       assertEquals(msg.position.y, 1.5f * Configuration.BOMB_ACCELERATION, FP_DELTA)
     }
-  } 
+  }
+  
+  @Test def bombsRemaining {
+    new ApplicationTester with StateTester {
+      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 10))
+      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 15))
+      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 20))
+      
+      assertEquals(querier.bombsRemaining(5), 5)
+      assertEquals(querier.bombsRemaining(11), 4)
+      assertEquals(querier.bombsRemaining(16), 3)
+      assertEquals(querier.bombsRemaining(21), 2)
+    }
+  }
 }
