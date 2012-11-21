@@ -14,21 +14,33 @@ class InGameScreen extends Screen {
                                         classOf[BombDestroyed],
                                         classOf[BombReleased],
                                         classOf[BuildingDestroyed])
-  val messagePassing = new MessagePassing
-  val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
-  val querier = new InGameStateQuerier(new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
-                                                      new ImmutableVector2f(0f, 0f),
-                                                      0f, 0f, false),
-                                       List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
-                                       Configuration.INIT_BOMBS,
-                                       TimeUtils.millis,
-                                       messagingComponent)
-  val renderer = new InGameRenderer(querier)
-  val inputProcessor = new InGameInputProcessor(querier, messagePassing)
+  private val messagePassing = new MessagePassing
+  private val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
+  private val querier = new InGameStateQuerier(new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
+                                                              new ImmutableVector2f(0f, 0f),
+                                                              0f, 0f, false),
+                                               List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
+                                               Configuration.INIT_BOMBS,
+                                               TimeUtils.millis,
+                                               messagingComponent)
+  private val renderer = new InGameRenderer(querier)
+  private val inputProcessor = new InGameInputProcessor(querier, messagePassing)
+  private val objectStateUpdater = new InGameObjectChecker(querier, messagePassing) 
   
   def render(dt: Float) {
+    /*
+     * Handle changes to the game state based on user input.
+     */
     inputProcessor.processInput
     
+    /*
+     * Handle changes to the game state based on collisions.
+     */
+    objectStateUpdater.checkObjectLiveness
+    
+    /*
+     * Render the level based on the current game state.
+     */
     renderer.renderLevel
   }
   
