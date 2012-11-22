@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.TimeUtils
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.Message
 import net.tyler.messaging.MessagePassing
+import com.badlogic.gdx.Gdx
 
 class InGameScreen extends Screen {
 
@@ -29,7 +30,8 @@ class InGameScreen extends Screen {
   
   def render(dt: Float) {
     /*
-     * Handle changes to the game state based on user input.
+     * Handle changes to the game state based on polling user input. Event based
+     * input is handled internally by libgdx (i.e. all mouse/key events).
      */
     inputProcessor.processInput
     
@@ -44,7 +46,15 @@ class InGameScreen extends Screen {
     renderer.renderLevel
   }
   
-  def show() = {messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(20f, -10f), TimeUtils.millis))}
+  def show() = {
+    /*
+     * Event based input processing goes through this. Polling is done for other
+     * types and is done in the render/update loop.
+     */
+    Gdx.input.setInputProcessor(inputProcessor)
+    
+    messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(20f, -10f), TimeUtils.millis))
+  }
   
   def hide() = {}
   

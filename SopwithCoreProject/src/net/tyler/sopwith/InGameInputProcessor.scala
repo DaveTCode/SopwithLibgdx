@@ -4,58 +4,68 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Peripheral
 import net.tyler.messaging.MessagePassing
 import com.badlogic.gdx.utils.TimeUtils
+import com.badlogic.gdx.InputProcessor
 
 /**
  * Class is responsible for handling input device polling and converting the
  * results into state change messages to pass back to the game model.
  */
 class InGameInputProcessor(private val querier: InGameStateQuerier, 
-                           private val messagePassing: MessagePassing) {
+                           private val messagePassing: MessagePassing) extends InputProcessor {
 
   /**
    * Called once per render loop to process any new input and convert it into
    * game state messages.
+   * 
+   * Accelerometer input is only available via polling (rather than event 
+   * based).
    */
-  def processInput {
-    implicit val t = TimeUtils.millis
-    
+  def processInput {    
     /*
      * Control of the plane is either done via the accelerometer (when 
      * available) or via the keyboard when the accelerometer is not available.
      */
     if (Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)) {
-      processAccelerometerInput
-    } else {
-      processKeyInput
+      processAccelerometerInput(TimeUtils.millis)
     }
-    
-    /*
-     * Touch/Mouse pointer use is used to release bombs
-     */
-    processTouchInput
   }
-
+  
+  private def processAccelerometerInput(t: Long) {
+    
+  }
+  
+  override def keyDown(keyCode: Int) = { false }
+  
+  override def keyTyped(char: Char) = { false }
+  
+  override def keyUp(keyCode: Int) = { false }
+  
+  override def scrolled(amount: Int) = { false }
+  
+  override def touchDown(x: Int, y: Int, pointer: Int, button: Int) = true
+  
   /**
    * Touch based input (includes mouse pointer input) is used to interact with
    * the planes weapons.
    */
-  private def processTouchInput(implicit t: Long) {
-    if (Gdx.input.justTouched) {
-      /*
-       * @TODO - DAT - Should add in check to make sure that the touch is near
-       * the plane. Blocked on collision code probably.
-       */
-      if (querier.bombsRemaining(t) > 0) {
-        messagePassing.send(new BombReleased(querier.planeState(t).position, t))
-      }
+  override def touchUp(x: Int, y: Int, pointer: Int, button: Int) = {
+    val t = TimeUtils.millis
+    
+    /*
+     * @TODO - DAT - Should add in check to make sure that the touch is near
+     * the plane. Blocked on collision code probably.
+     */
+    if (querier.bombsRemaining(t) > 0) {
+      messagePassing.send(new BombReleased(querier.planeState(t).position, t))
     }
+    
+    /*
+     * Flag that we have processed this message (not really necessary).
+     */
+    true
   }
   
-  private def processAccelerometerInput(implicit t: Long) {
-    
-  }
+  override def touchDragged(x: Int, y: Int, pointer: Int) = { false }
   
-  private def processKeyInput(implicit t: Long) {
-    
-  }
+  override def mouseMoved(x: Int, y: Int) = { false }
 }
