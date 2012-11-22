@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Peripheral
 import net.tyler.messaging.MessagePassing
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.Input.Keys
 
 /**
  * Class is responsible for handling input device polling and converting the
@@ -34,7 +35,19 @@ class InGameInputProcessor(private val querier: InGameStateQuerier,
     
   }
   
-  override def keyDown(keyCode: Int) = { false }
+  override def keyDown(keyCode: Int) = keyCode match {
+    case Keys.UP | Keys.DOWN => {
+      messagePassing.send(new PlaneOrientationFlip(TimeUtils.millis))
+      
+      true
+    }
+    case Keys.LEFT => {
+      true
+    }
+    case Keys.RIGHT => {
+      true
+    }
+  }
   
   override def keyTyped(char: Char) = { false }
   

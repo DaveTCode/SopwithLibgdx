@@ -2,7 +2,6 @@ package test.tyler.sopwith
 
 import org.junit.Assert._
 import org.junit.Test
-
 import net.tyler.math.ImmutableVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
@@ -13,6 +12,8 @@ import net.tyler.sopwith.InGameStateQuerier
 import net.tyler.sopwith.PlaneAngularVelocityChange
 import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.PlaneVelocityChange
+import net.tyler.sopwith.PlaneOrientationFlip
+import net.tyler.sopwith.PlaneOrientationFlip
 
 /**
  * Test class for checking that the plane updates it's state correctly under
@@ -27,6 +28,7 @@ class PlaneStateQuerierTest {
   trait StateTester {
     private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
                                           classOf[PlaneAngularVelocityChange],
+                                          classOf[PlaneOrientationFlip],
                                           classOf[BombDestroyed],
                                           classOf[BombReleased],
                                           classOf[BuildingDestroyed])
@@ -66,6 +68,15 @@ class PlaneStateQuerierTest {
       val positionAfter1000ms = querier.planeState(1010).position
       assertEquals((initialPlaneState.position.x + initialPlaneState.velocity.x * 0.01f) + newVelocity.x, positionAfter1000ms.x, FP_DELTA)
       assertEquals((initialPlaneState.position.y + initialPlaneState.velocity.y * 0.01f) + newVelocity.y, positionAfter1000ms.y, FP_DELTA)
+    }
+  }
+  
+  @Test def planeOrientation() {
+    new ApplicationTester with StateTester {
+      messagePassing.send(new PlaneOrientationFlip(10))
+      
+      assertEquals(false, querier.planeState(9).flipped)
+      assertEquals(true, querier.planeState(10).flipped)
     }
   }
 }
