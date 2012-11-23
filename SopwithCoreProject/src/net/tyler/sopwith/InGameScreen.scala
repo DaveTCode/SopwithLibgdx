@@ -7,20 +7,28 @@ import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.Message
 import net.tyler.messaging.MessagePassing
 import com.badlogic.gdx.Gdx
+import net.tyler.math.Vector2fConstants
 
 class InGameScreen extends Screen {
+  
+  private val initialPlaneState = new PlaneState(Vector2fConstants.zero,
+                                                 Vector2fConstants.zero,
+                                                 new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
+                                                 0f, 0f, 0f, false)
 
-  private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
+  private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
+                                        classOf[PlaneVelocityChange],
+                                        classOf[PlanePositionChange],
+                                        classOf[PlaneAngularAccelerationChange],
                                         classOf[PlaneAngularVelocityChange],
+                                        classOf[PlaneAngleChange],
                                         classOf[PlaneOrientationFlip],
                                         classOf[BombDestroyed],
                                         classOf[BombReleased],
                                         classOf[BuildingDestroyed])
   private val messagePassing = new MessagePassing
   private val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
-  private val querier = new InGameStateQuerier(new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
-                                                              new ImmutableVector2f(0f, 0f),
-                                                              0f, 0f, false),
+  private val querier = new InGameStateQuerier(initialPlaneState,
                                                List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
                                                Configuration.INIT_BOMBS,
                                                TimeUtils.millis,

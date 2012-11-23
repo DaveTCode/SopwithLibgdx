@@ -42,9 +42,19 @@ class InGameInputProcessor(private val querier: InGameStateQuerier,
       true
     }
     case Keys.LEFT => {
+      val t = TimeUtils.millis
+      
+      if (querier.planeState(t).angularVelocity != -1f * Configuration.BASE_ANGULAR_VEL) {
+        messagePassing.send(new PlaneAngularVelocityChange(-1f * Configuration.BASE_ANGULAR_VEL, t))
+      }
       true
     }
     case Keys.RIGHT => {
+      val t = TimeUtils.millis
+      
+      if (querier.planeState(t).angularVelocity != Configuration.BASE_ANGULAR_VEL) {
+        messagePassing.send(new PlaneAngularVelocityChange(Configuration.BASE_ANGULAR_VEL, t))
+      }
       true
     }
   }

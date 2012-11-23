@@ -23,4 +23,14 @@ abstract class StateQuerier(val messagingComponent: MessagingComponent) {
     eventsPreTickVal(t).collect({
       case message if (ClassManifest.singleType(message) <:< m) => message
     }).asInstanceOf[Seq[T]]
+  
+  /**
+   * Return a list of all events which occurred before a given time t and match
+   * any of the given message types.
+   */
+  def multiMessageEvents(types: Seq[Class[_ <: Message]], t: Long) = {
+    eventsPreTickVal(t) collect {
+      case message if types.contains(message.getClass) => message
+    }
+  }
 }

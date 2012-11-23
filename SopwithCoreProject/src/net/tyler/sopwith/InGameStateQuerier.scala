@@ -15,84 +15,12 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
                          val createTime: Long,
                          messagingComponent: MessagingComponent) extends StateQuerier(messagingComponent) {
   
-  private def planeVelocityEvents(t: Long) = messageEvents[PlaneVelocityChange](t)
-  private def planeAngularVelocityEvents(t: Long) = messageEvents[PlaneAngularVelocityChange](t)
-  private def planeOrientationEvents(t: Long) = messageEvents[PlaneOrientationFlip](t)
+  private val planeStateQuerier = new InGamePlaneStateQuerier(initPlaneState, createTime, this)
   
   private def bombReleaseEvents(t:Long) = messageEvents[BombReleased](t)
   private def bombDestroyedEvents(t: Long) = messageEvents[BombDestroyed](t)
   
   private def buildingDestroyedEvents(t: Long) = messageEvents[BuildingDestroyed](t)
-
-  /**
-   * The planes velocity at time t.
-   */
-  private def planeVelocity(t: Long): ImmutableVector2f = {
-    val events = planeVelocityEvents(t)
-    
-    if (events.isEmpty) initPlaneState.velocity else events.last.velocity
-  } 
-    
-  /**
-   * The planes position at time t.
-   */
-  private def planePosition(t: Long): ImmutableVector2f = {
-    @tailrec def recurCalcPosition(velocityChanges: List[PlaneVelocityChange],
-                                   currentPos: ImmutableVector2f,
-                                   currentVel: ImmutableVector2f,
-                                   currentTime: Long): ImmutableVector2f = velocityChanges match {
-      case Nil => {
-        currentPos + currentVel.scale((t - currentTime) / 1000f)
-      }
-      case head :: tail => {
-        recurCalcPosition(tail, currentPos + currentVel.scale((head.t - currentTime) / 1000f), head.velocity, head.t)
-      }
-    }
-    
-    recurCalcPosition(planeVelocityEvents(t).sortBy(_.ticks).toList,
-                      initPlaneState.position,
-                      initPlaneState.velocity,
-                      createTime)
-  }
-  
-  /**
-   * The planes angular velocity at time t.
-   */
-  private def planeAngularVelocity(t: Long): Float = {
-    val events = planeAngularVelocityEvents(t)
-    
-    if (events.isEmpty) initPlaneState.angularVelocity else events.last.velocity
-  }
-    
-  /**
-   * The planes angle at time t.
-   */
-  private def planeAngle(t: Long): Float = {
-    @tailrec def recurCalcAngle(velocityChanges: List[PlaneAngularVelocityChange],
-                                currentAngle: Float,
-                                currentAngularVelocity: Float,
-                                currentTime: Long): Float = velocityChanges match {
-      case Nil => {
-        currentAngle + currentAngularVelocity * ((t - currentTime) / 1000f)
-      }
-      case head :: tail => {
-        recurCalcAngle(tail, currentAngle + currentAngularVelocity * ((t - currentTime) / 1000f), head.velocity, head.t)
-      }
-    }
-    
-    val unadjAngle = recurCalcAngle(planeAngularVelocityEvents(t).sortBy(_.ticks).toList,
-                                    initPlaneState.angle, 
-                                    initPlaneState.angularVelocity, 
-                                    createTime) % scala.math.Pi * 2f
-                                    
-    if (unadjAngle < 0f) (unadjAngle + scala.math.Pi * 2f).toFloat else unadjAngle.toFloat
-  }
-  
-  /**
-   * The orientation of the plane at time t.
-   */
-  private def planeOrientation(t: Long): Boolean =
-    planeOrientationEvents(t).size % 2 == 1
     
   /**
    * A list of all the bombs which are still alive at time t. 
@@ -130,9 +58,13 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
    * occurred.
    */
   def planeState(t: Long): PlaneState =
-    new PlaneState(planePosition(t), planeVelocity(t), 
-                   planeAngle(t), planeAngularVelocity(t), 
-                   planeOrientation(t))
+    new PlaneState(planeStateQuerier.planeAcceleration(t), 
+                   planeStateQuerier.planeVelocity(t), 
+                   planeStateQuerier.planePosition(t),
+                   planeStateQuerier.planeAngularAcceleration(t),
+                   planeStateQuerier.planeAngularVelocity(t),
+                   planeStateQuerier.planeAngle(t),  
+                   planeStateQuerier.planeOrientation(t))
   
   /**
    * A list of all the buildings with their current state at a give time t.

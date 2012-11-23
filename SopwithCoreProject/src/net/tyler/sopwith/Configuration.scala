@@ -9,4 +9,6 @@ object Configuration {
   val BOMB_ACCELERATION = -9.8f
   
   val INIT_BOMBS = 5
+  
+  val BASE_ANGULAR_VEL = 0.5f
 }

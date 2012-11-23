@@ -15,6 +15,7 @@ import net.tyler.sopwith.InGameStateQuerier
 import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.BombState
 import net.tyler.sopwith.Configuration
+import net.tyler.math.Vector2fConstants
 
 /**
  * Test that queries regarding the bombs return the correct set of information.
@@ -23,7 +24,10 @@ class BombMessageTest {
   
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), 0f, 0f, false)
+  val initialPlaneState = new PlaneState(Vector2fConstants.zero, 
+                                         new ImmutableVector2f(1f, 2f), 
+                                         new ImmutableVector2f(10f, 10f), 
+                                         0f, 0f, 0f, false)
   
   trait StateTester {
     private val inGameMessageTypes = List(classOf[PlaneVelocityChange],

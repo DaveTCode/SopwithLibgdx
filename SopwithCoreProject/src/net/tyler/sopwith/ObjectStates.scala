@@ -6,10 +6,12 @@ case class BombState(val position: ImmutableVector2f,
                      val velocity: ImmutableVector2f, 
                      val releasePosition: ImmutableVector2f)
 
-case class PlaneState(val position: ImmutableVector2f,
+case class PlaneState(val acceleration: ImmutableVector2f,
                       val velocity: ImmutableVector2f,
-                      val angle: Float,
+                      val position: ImmutableVector2f,
+                      val angularAcceleration: Float,
                       val angularVelocity: Float,
+                      val angle: Float,
                       val flipped: Boolean)
                       
 case class BuildingState(val building: Building, val isLive: Boolean) {

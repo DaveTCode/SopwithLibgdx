@@ -14,6 +14,7 @@ import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.PlaneVelocityChange
 import net.tyler.sopwith.PlaneOrientationFlip
 import net.tyler.sopwith.PlaneOrientationFlip
+import net.tyler.math.Vector2fConstants
 
 /**
  * Test class for checking that the plane updates it's state correctly under
@@ -23,7 +24,10 @@ class PlaneStateQuerierTest {
 
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), 0f, 0f, false)
+  val initialPlaneState = new PlaneState(Vector2fConstants.zero, 
+                                         new ImmutableVector2f(1f, 2f), 
+                                         new ImmutableVector2f(10f, 10f), 
+                                         0f, 0f, 0f, false)
   
   trait StateTester {
     private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
@@ -76,7 +80,7 @@ class PlaneStateQuerierTest {
       messagePassing.send(new PlaneOrientationFlip(10))
       
       assertEquals(false, querier.planeState(9).flipped)
-      assertEquals(true, querier.planeState(10).flipped)
+      assertEquals(true, querier.planeState(11).flipped)
     }
   }
 }
