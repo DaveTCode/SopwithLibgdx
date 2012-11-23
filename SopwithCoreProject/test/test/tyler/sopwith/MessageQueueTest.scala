@@ -5,7 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.junit.Assert._
 import org.junit.Test
 
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
@@ -33,7 +33,7 @@ class MessageQueueTest {
   
   @Test def singleMessage() {
     new ApplicationTester with StateTester {
-      val pos = new ImmutableVector2f(-100f, -100f)
+      val pos = new CartesianVector2f(-100f, -100f)
       
       messagePassing.send(new BombReleased(pos, 1959203))
       assertEquals(stateQuerier.eventsPostTickVal(0), messagingComponent.Buffer)
@@ -47,7 +47,7 @@ class MessageQueueTest {
   
   @Test def messageTypes() {
     new ApplicationTester with StateTester {
-      val pos = new ImmutableVector2f(-100f, -100f)
+      val pos = new CartesianVector2f(-100f, -100f)
       
       messagePassing.send(new BombReleased(pos, 1029478))
       messagePassing.send(new BombDestroyed(pos, 98123))
@@ -59,7 +59,7 @@ class MessageQueueTest {
   
   @Test def messageOrdering() {
     new ApplicationTester with StateTester {
-      val pos = new ImmutableVector2f(-100f, -100f)
+      val pos = new CartesianVector2f(-100f, -100f)
       val msg1 = new BombReleased(pos, 1)
       val msg2 = new BombReleased(pos, 10923)
       val msg3 = new BombReleased(pos, 123)

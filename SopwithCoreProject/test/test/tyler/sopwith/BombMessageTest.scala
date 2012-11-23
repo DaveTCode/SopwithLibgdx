@@ -10,7 +10,7 @@ import net.tyler.sopwith.BuildingDestroyed
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.sopwith.InGameStateQuerier
 import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.BombState
@@ -43,7 +43,7 @@ class BombMessageTest {
   
   @Test def oneLiveBomb {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 10))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
       
       assertEquals(querier.liveBombs(9).size, 0)
       assertEquals(querier.liveBombs(11).size, 1)
@@ -59,9 +59,9 @@ class BombMessageTest {
   
   @Test def bombsRemaining {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 10))
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 15))
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 20))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 15))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 20))
       
       assertEquals(querier.bombsRemaining(5), 5)
       assertEquals(querier.bombsRemaining(11), 4)

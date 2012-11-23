@@ -1,7 +1,7 @@
 package net.tyler.sopwith
 
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 
-case class Building(val position: ImmutableVector2f) {
+case class Building(val position: CartesianVector2f) {
 
 }

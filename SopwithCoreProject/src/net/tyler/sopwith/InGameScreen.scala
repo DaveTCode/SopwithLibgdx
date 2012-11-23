@@ -1,27 +1,25 @@
 package net.tyler.sopwith
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import net.tyler.math.ImmutableVector2f
 import com.badlogic.gdx.utils.TimeUtils
-import net.tyler.messaging.MessagingComponent
+import net.tyler.math.CartesianVector2f
+import net.tyler.math.PolarConstants
 import net.tyler.messaging.Message
 import net.tyler.messaging.MessagePassing
-import com.badlogic.gdx.Gdx
-import net.tyler.math.Vector2fConstants
+import net.tyler.messaging.MessagingComponent
+import net.tyler.math.PolarVector2f
 
 class InGameScreen extends Screen {
   
-  private val initialPlaneState = new PlaneState(Vector2fConstants.zero,
-                                                 Vector2fConstants.zero,
-                                                 new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
-                                                 0f, 0f, 0f, false)
+  private val initialPlaneState = new PlaneState(PolarConstants.zero,
+                                                 PolarConstants.zero,
+                                                 new CartesianVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f).toPolar,
+                                                 false)
 
   private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
                                         classOf[PlaneVelocityChange],
                                         classOf[PlanePositionChange],
-                                        classOf[PlaneAngularAccelerationChange],
-                                        classOf[PlaneAngularVelocityChange],
-                                        classOf[PlaneAngleChange],
                                         classOf[PlaneOrientationFlip],
                                         classOf[BombDestroyed],
                                         classOf[BombReleased],
@@ -29,7 +27,7 @@ class InGameScreen extends Screen {
   private val messagePassing = new MessagePassing
   private val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
   private val querier = new InGameStateQuerier(initialPlaneState,
-                                               List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
+                                               List(new Building(new CartesianVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
                                                Configuration.INIT_BOMBS,
                                                TimeUtils.millis,
                                                messagingComponent)
@@ -61,8 +59,6 @@ class InGameScreen extends Screen {
      * types and is done in the render/update loop.
      */
     Gdx.input.setInputProcessor(inputProcessor)
-    
-    messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(20f, -10f), TimeUtils.millis))
   }
   
   def hide() = {}

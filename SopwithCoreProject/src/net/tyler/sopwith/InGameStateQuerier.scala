@@ -2,7 +2,7 @@ package net.tyler.sopwith
 
 import scala.annotation.tailrec
 import scala.collection.immutable.List
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.StateQuerier
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.MessagePassing
@@ -40,8 +40,8 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
   private def calculateBombState(releasedEvent: BombReleased, t: Long): BombState = {
     val deltaT = (t - releasedEvent.t) / 1000f
     val acc = Configuration.BOMB_ACCELERATION
-    val vel = new ImmutableVector2f(0f, acc * deltaT)
-    val pos = new ImmutableVector2f(releasedEvent.releasePosition.x, 
+    val vel = new CartesianVector2f(0f, acc * deltaT)
+    val pos = new CartesianVector2f(releasedEvent.releasePosition.x, 
                                     releasedEvent.releasePosition.y + vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
     
     new BombState(pos, vel, releasedEvent.releasePosition)
@@ -58,12 +58,9 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
    * occurred.
    */
   def planeState(t: Long): PlaneState =
-    new PlaneState(planeStateQuerier.planeAcceleration(t), 
-                   planeStateQuerier.planeVelocity(t), 
-                   planeStateQuerier.planePosition(t),
-                   planeStateQuerier.planeAngularAcceleration(t),
-                   planeStateQuerier.planeAngularVelocity(t),
-                   planeStateQuerier.planeAngle(t),  
+    new PlaneState(planeStateQuerier.planeAcceleration(t),
+                   planeStateQuerier.planeVelocity(t),
+                   planeStateQuerier.planePosition(t),  
                    planeStateQuerier.planeOrientation(t))
   
   /**
