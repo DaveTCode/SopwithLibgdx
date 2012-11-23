@@ -37,9 +37,25 @@ class InGamePlaneStateQuerier(val initPlaneState: PlaneState,
    * The planes velocity at time t.
    */
   def planeVelocity(t: Long): PolarVector2f = {
-    val events = velocityEvents(t)
+    @tailrec def recurCalcVelocity(messages: List[PlaneAccelerationChange],
+                                   vel: PolarVector2f,
+                                   acc: PolarVector2f,
+                                   currentTime: Long): PolarVector2f = messages match {
+      case Nil => {
+        new PolarVector2f()
+      } 
+      case head :: tail => {
+        
+      }
+    }
     
-    if (events.isEmpty) initPlaneState.velocity else events.last.velocity
+    val events = velocityEvents(t)
+    val initVel = if (events.isEmpty) initPlaneState.velocity else events.last.velocity
+    val initAcc = if (events.isEmpty) initPlaneState.acceleration else planeAcceleration(events.last.t)
+    
+    recurCalcVelocity(accelerationEvents(t).sortBy(_.ticks).toList, 
+                      initVel, initAcc, 
+                      t)
   } 
     
   /**

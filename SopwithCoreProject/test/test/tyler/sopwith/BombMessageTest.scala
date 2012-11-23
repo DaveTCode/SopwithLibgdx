@@ -2,20 +2,19 @@ package test.tyler.sopwith
 
 import org.junit.Assert._
 import org.junit.Test
-import net.tyler.sopwith.PlaneVelocityChange
-import net.tyler.sopwith.PlaneAngularVelocityChange
-import net.tyler.sopwith.BombDestroyed
-import net.tyler.sopwith.BombReleased
-import net.tyler.sopwith.BuildingDestroyed
+
+import net.tyler.math.CartesianVector2f
+import net.tyler.math.PolarConstants
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
-import net.tyler.messaging.StateQuerier
-import net.tyler.math.CartesianVector2f
+import net.tyler.sopwith.BombDestroyed
+import net.tyler.sopwith.BombReleased
+import net.tyler.sopwith.BombState
+import net.tyler.sopwith.BuildingDestroyed
+import net.tyler.sopwith.Configuration
 import net.tyler.sopwith.InGameStateQuerier
 import net.tyler.sopwith.PlaneState
-import net.tyler.sopwith.BombState
-import net.tyler.sopwith.Configuration
-import net.tyler.math.Vector2fConstants
+import net.tyler.sopwith.PlaneVelocityChange
 
 /**
  * Test that queries regarding the bombs return the correct set of information.
@@ -24,14 +23,13 @@ class BombMessageTest {
   
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(Vector2fConstants.zero, 
-                                         new ImmutableVector2f(1f, 2f), 
-                                         new ImmutableVector2f(10f, 10f), 
-                                         0f, 0f, 0f, false)
+  val initialPlaneState = new PlaneState(PolarConstants.zero, 
+                                         new CartesianVector2f(1f, 2f).toPolar, 
+                                         new CartesianVector2f(10f, 10f).toPolar, 
+                                         false)
   
   trait StateTester {
     private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
-                                          classOf[PlaneAngularVelocityChange],
                                           classOf[BombDestroyed],
                                           classOf[BombReleased],
                                           classOf[BuildingDestroyed])
