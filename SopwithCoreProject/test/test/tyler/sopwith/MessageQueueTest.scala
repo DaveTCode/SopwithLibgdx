@@ -12,7 +12,6 @@ import net.tyler.messaging.StateQuerier
 import net.tyler.sopwith.BombDestroyed
 import net.tyler.sopwith.BombReleased
 import net.tyler.sopwith.BuildingDestroyed
-import net.tyler.sopwith.PlaneAngularVelocityChange
 import net.tyler.sopwith.PlaneVelocityChange
 
 /**
@@ -21,11 +20,8 @@ import net.tyler.sopwith.PlaneVelocityChange
  */
 class MessageQueueTest {
   trait StateTester {
-    private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
-                                          classOf[PlaneAngularVelocityChange],
-                                          classOf[BombDestroyed],
-                                          classOf[BombReleased],
-                                          classOf[BuildingDestroyed])
+    private val inGameMessageTypes = List(classOf[BombDestroyed],
+                                          classOf[BombReleased])
     val messagePassing = new MessagePassing
     val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
     val stateQuerier = new StateQuerier(messagingComponent) {}

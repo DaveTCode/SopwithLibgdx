@@ -6,6 +6,9 @@ object Configuration {
   val GAME_WIDTH = 480
   val GAME_HEIGHT = 320
   
+  val PLANE_WIDTH = 99
+  val PLANE_HEIGHT = 51
+  
   val BOMB_ACCELERATION = -9.8f
   
   val INIT_BOMBS = 5

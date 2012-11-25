@@ -2,19 +2,21 @@ package test.tyler.sopwith
 
 import org.junit.Assert._
 import org.junit.Test
-import net.tyler.sopwith.PlaneVelocityChange
-import net.tyler.sopwith.PlaneAngularVelocityChange
-import net.tyler.sopwith.BombDestroyed
-import net.tyler.sopwith.BombReleased
-import net.tyler.sopwith.BuildingDestroyed
+
+import net.tyler.math.ImmutableVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
-import net.tyler.math.ImmutableVector2f
-import net.tyler.sopwith.InGameStateQuerier
-import net.tyler.sopwith.PlaneState
+import net.tyler.sopwith.BombDestroyed
+import net.tyler.sopwith.BombReleased
 import net.tyler.sopwith.BombState
+import net.tyler.sopwith.BuildingDestroyed
 import net.tyler.sopwith.Configuration
+import net.tyler.sopwith.InGameStateQuerier
+import net.tyler.sopwith.PlaneAccelerationChange
+import net.tyler.sopwith.PlanePositionChange
+import net.tyler.sopwith.PlaneState
+import net.tyler.sopwith.PlaneVelocityChange
 
 /**
  * Test that queries regarding the bombs return the correct set of information.
@@ -23,11 +25,12 @@ class BombMessageTest {
   
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), 0f, 0f, false)
+  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), new ImmutableVector2f(0f, 0f), false)
   
   trait StateTester {
-    private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
-                                          classOf[PlaneAngularVelocityChange],
+    private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
+                                          classOf[PlaneVelocityChange],
+                                          classOf[PlanePositionChange],
                                           classOf[BombDestroyed],
                                           classOf[BombReleased],
                                           classOf[BuildingDestroyed])

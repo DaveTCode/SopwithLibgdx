@@ -9,11 +9,14 @@ import net.tyler.sopwith.BombDestroyed
 import net.tyler.sopwith.BombReleased
 import net.tyler.sopwith.BuildingDestroyed
 import net.tyler.sopwith.InGameStateQuerier
-import net.tyler.sopwith.PlaneAngularVelocityChange
+import net.tyler.sopwith.PlaneOrientationFlip
+import net.tyler.sopwith.PlaneOrientationFlip
 import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.PlaneVelocityChange
-import net.tyler.sopwith.PlaneOrientationFlip
-import net.tyler.sopwith.PlaneOrientationFlip
+import net.tyler.sopwith.PlaneVelocityChange
+import net.tyler.sopwith.PlaneAccelerationChange
+import net.tyler.sopwith.PlaneAccelerationChange
+import net.tyler.sopwith.PlanePositionChange
 
 /**
  * Test class for checking that the plane updates it's state correctly under
@@ -23,11 +26,12 @@ class PlaneStateQuerierTest {
 
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), 0f, 0f, false)
+  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), new ImmutableVector2f(0f, 0f), false)
   
   trait StateTester {
-    private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
-                                          classOf[PlaneAngularVelocityChange],
+    private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
+                                          classOf[PlaneVelocityChange],
+                                          classOf[PlanePositionChange],
                                           classOf[PlaneOrientationFlip],
                                           classOf[BombDestroyed],
                                           classOf[BombReleased],
@@ -42,8 +46,8 @@ class PlaneStateQuerierTest {
     
     new ApplicationTester with StateTester {
       assertEquals(initialPlaneState, querier.planeState(0))
-      assertEquals(initialPlaneState.velocity, querier.planeState(100).velocity)
-      assertEquals(initialPlaneState.angularVelocity, querier.planeState(100).angularVelocity, FP_DELTA)
+      assertEquals(initialPlaneState.velocity, querier.planeState(0).velocity)
+      assertEquals(initialPlaneState.acceleration, querier.planeState(10).acceleration)
     }
   }
   
@@ -54,6 +58,25 @@ class PlaneStateQuerierTest {
       
       assertEquals(initialPlaneState.velocity, querier.planeState(9).velocity)
       assertEquals(newVelocity, querier.planeState(11).velocity)
+    }
+  }
+  
+  @Test def velocityChanges() {
+    new ApplicationTester with StateTester {
+      messagePassing.send(new PlaneAccelerationChange(new ImmutableVector2f(10f, 0f), 10))
+      messagePassing.send(new PlaneAccelerationChange(new ImmutableVector2f(5f, 5f), 1010))
+      
+      assertEquals(initialPlaneState.velocity, querier.planeState(10).velocity)
+      assertEquals(initialPlaneState.velocity.x + 10f, querier.planeState(1010).velocity.x, FP_DELTA)
+      assertEquals(initialPlaneState.velocity.y, querier.planeState(1010).velocity.y, FP_DELTA)
+      
+      assertEquals(initialPlaneState.velocity.x + 10f + 5f, querier.planeState(2010).velocity.x, FP_DELTA)
+      assertEquals(initialPlaneState.velocity.y + 5f, querier.planeState(2010).velocity.y, FP_DELTA)
+      
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(7f, 7f), 90))
+      
+      assertEquals(7f + 1f/100f, querier.planeState(91).velocity.x, FP_DELTA)
+      assertEquals(7f, querier.planeState(91).velocity.y, FP_DELTA)
     }
   }
   
@@ -76,7 +99,29 @@ class PlaneStateQuerierTest {
       messagePassing.send(new PlaneOrientationFlip(10))
       
       assertEquals(false, querier.planeState(9).flipped)
-      assertEquals(true, querier.planeState(10).flipped)
+      assertEquals(true, querier.planeState(11).flipped)
+    }
+  }
+  
+  @Test def planeRotation() {
+    new ApplicationTester with StateTester {
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(0f, 1f), 9))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(1f, 1f), 10))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(1f, 0f), 11))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(1f, -1f), 12))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(0f, -1f), 13))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(-1f, -1f), 14))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(-1f, 0f), 15))
+      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(-1f, 1f), 16))
+      
+      assertEquals(0f, querier.planeState(10).angle, FP_DELTA)
+      assertEquals(math.Pi / 4f, querier.planeState(11).angle, FP_DELTA)
+      assertEquals(math.Pi / 2f, querier.planeState(12).angle, FP_DELTA)
+      assertEquals(3f * math.Pi / 4f, querier.planeState(13).angle, FP_DELTA)
+      assertEquals(math.Pi, querier.planeState(14).angle, FP_DELTA)
+      assertEquals(5f * math.Pi / 4f, querier.planeState(15).angle, FP_DELTA)
+      assertEquals(3f * math.Pi / 2f, querier.planeState(16).angle, FP_DELTA)
+      assertEquals(7f * math.Pi / 4f, querier.planeState(17).angle, FP_DELTA)
     }
   }
 }

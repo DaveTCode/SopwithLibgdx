@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import net.tyler.sopwith.TextureManager._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.TimeUtils
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 class InGameRenderer(private val querier: InGameStateQuerier) {
 
@@ -12,18 +13,22 @@ class InGameRenderer(private val querier: InGameStateQuerier) {
   private val spriteBatch = new SpriteBatch(100)
   
   def renderLevel {
-    val renderTime = TimeUtils.millis
+    implicit val renderTime = TimeUtils.millis
     
     renderBackground
     
-    renderBuildings(renderTime)
+    renderBuildings
     
-    renderPlane(renderTime)
+    renderPlane
     
-    renderBombs(renderTime)
+    renderBombs
   }
   
-  private def renderBackground {
+  /**
+   * Responsible for drawing the background onto the screen. Note that this should be done
+   * before drawing any of the rest of the game.
+   */
+  private def renderBackground(implicit renderTime: Long) {
     spriteBatch.disableBlending
     spriteBatch.begin
     
@@ -32,8 +37,11 @@ class InGameRenderer(private val querier: InGameStateQuerier) {
     spriteBatch.end
   }
   
-  private def renderBuildings(t: Long) {
-    val buildings = querier.buildings(t)
+  /**
+   * Responsible for drawing each of the buildings.
+   */
+  private def renderBuildings(implicit renderTime: Long) {
+    val buildings = querier.buildings(renderTime)
     
     spriteBatch.enableBlending
     spriteBatch.begin
@@ -49,19 +57,32 @@ class InGameRenderer(private val querier: InGameStateQuerier) {
     spriteBatch.end
   }
   
-  private def renderPlane(t: Long) {
-    val plane = querier.planeState(t)
+  /**
+   * Responsible for rendering the image of the plane at the correct location 
+   * and with the correct rotation.
+   */
+  private def renderPlane(implicit renderTime: Long) {
+    val plane = querier.planeState(renderTime)
     
     spriteBatch.enableBlending
     spriteBatch.begin
     
-    spriteBatch.draw(PlaneTexture.texture, plane.position.x, plane.position.y)
+    spriteBatch.draw(new TextureRegion(PlaneTexture.texture),                                  // Texture region
+                     plane.position.x, plane.position.y,                                       // Position
+                     PlaneTexture.texture.getWidth / -2f, PlaneTexture.texture.getHeight / -2f,// Origin
+                     PlaneTexture.texture.getWidth, PlaneTexture.texture.getHeight,            // Width, Height
+                     1f, 1f,                                                                   // Scaling factor
+                     plane.angle)                                                              // Rotation angle
     
     spriteBatch.end
   }
   
-  private def renderBombs(t: Long) {
-    val bombs = querier.liveBombs(t)
+  /**
+   * Responsible for rendering all of the currently live bombs. This may result 
+   * in nothing.
+   */
+  private def renderBombs(implicit renderTime: Long) {
+    val bombs = querier.liveBombs(renderTime)
     
     spriteBatch.enableBlending
     spriteBatch.begin

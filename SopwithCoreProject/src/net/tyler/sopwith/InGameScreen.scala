@@ -7,20 +7,23 @@ import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.Message
 import net.tyler.messaging.MessagePassing
 import com.badlogic.gdx.Gdx
+import net.tyler.math.CartesianVectorConstants
 
 class InGameScreen extends Screen {
 
+  private val initPlaneState = new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
+                                              CartesianVectorConstants.zero,
+                                              CartesianVectorConstants.zero,
+                                              false)
+  
   private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
-                                        classOf[PlaneAngularVelocityChange],
                                         classOf[PlaneOrientationFlip],
                                         classOf[BombDestroyed],
                                         classOf[BombReleased],
                                         classOf[BuildingDestroyed])
   private val messagePassing = new MessagePassing
   private val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
-  private val querier = new InGameStateQuerier(new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
-                                                              new ImmutableVector2f(0f, 0f),
-                                                              0f, 0f, false),
+  private val querier = new InGameStateQuerier(initPlaneState,
                                                List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
                                                Configuration.INIT_BOMBS,
                                                TimeUtils.millis,

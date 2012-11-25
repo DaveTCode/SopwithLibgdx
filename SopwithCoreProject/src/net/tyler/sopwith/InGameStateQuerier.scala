@@ -15,8 +15,14 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
                          val createTime: Long,
                          messagingComponent: MessagingComponent) extends StateQuerier(messagingComponent) {
   
+  private def planeAccelerationEvents(tMin: Long, tMax: Long) = messageEvents[PlaneAccelerationChange](tMin, tMax)
+  private def planeVelocityEvents(tMin: Long, tMax: Long) = messageEvents[PlaneVelocityChange](tMin, tMax)
+  private def planePositionAffectingEvents(tMin: Long, tMax: Long) =
+    planeAccelerationEvents(tMin, tMax) ++ planeVelocityEvents(tMin, tMax)
+    
+  private def planeAccelerationEvents(t: Long) = messageEvents[PlaneAccelerationChange](t)
   private def planeVelocityEvents(t: Long) = messageEvents[PlaneVelocityChange](t)
-  private def planeAngularVelocityEvents(t: Long) = messageEvents[PlaneAngularVelocityChange](t)
+  private def planePositionEvents(t: Long) = messageEvents[PlanePositionChange](t)
   private def planeOrientationEvents(t: Long) = messageEvents[PlaneOrientationFlip](t)
   
   private def bombReleaseEvents(t:Long) = messageEvents[BombReleased](t)
@@ -25,67 +31,88 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
   private def buildingDestroyedEvents(t: Long) = messageEvents[BuildingDestroyed](t)
 
   /**
+   * The planes acceleration at time t.
+   */
+  private def planeAcceleration(t: Long): ImmutableVector2f = {
+    val events = planeAccelerationEvents(t)
+    
+    if (events.isEmpty) initPlaneState.acceleration else events.last.acceleration
+  }
+  
+  /**
    * The planes velocity at time t.
    */
   private def planeVelocity(t: Long): ImmutableVector2f = {
+    @tailrec def recurCalcVelocity(accelerationChanges: List[PlaneAccelerationChange],
+                                   acc: ImmutableVector2f,
+                                   vel: ImmutableVector2f,
+                                   currentTime: Long): ImmutableVector2f = accelerationChanges match {
+      case Nil => {
+        vel + acc.scale((t - currentTime) / 1000f)
+      }
+      case head :: tail => {
+        recurCalcVelocity(tail, head.acceleration, vel + acc.scale((head.t - currentTime) / 1000f), head.t)
+      }
+    }
+    
     val events = planeVelocityEvents(t)
     
-    if (events.isEmpty) initPlaneState.velocity else events.last.velocity
+    val initVel = if (events.isEmpty) initPlaneState.velocity else events.last.velocity
+    val initAcc = if (events.isEmpty) initPlaneState.acceleration else planeAcceleration(events.last.t)
+    val initT = if (events.isEmpty) createTime else events.last.t
+    
+    recurCalcVelocity(planeAccelerationEvents(initT, t).sortBy(_.ticks).toList, 
+                      initAcc, 
+                      initVel, 
+                      initT)
   } 
     
   /**
    * The planes position at time t.
    */
-  private def planePosition(t: Long): ImmutableVector2f = {
-    @tailrec def recurCalcPosition(velocityChanges: List[PlaneVelocityChange],
-                                   currentPos: ImmutableVector2f,
-                                   currentVel: ImmutableVector2f,
-                                   currentTime: Long): ImmutableVector2f = velocityChanges match {
+  private def planePosition(t: Long): ImmutableVector2f = {    
+    @tailrec def recurCalcPosition(relevantChanges: List[Message],
+                                   pos: ImmutableVector2f,
+                                   vel: ImmutableVector2f,
+                                   acc: ImmutableVector2f,
+                                   currentTime: Long): ImmutableVector2f = relevantChanges match {
       case Nil => {
-        currentPos + currentVel.scale((t - currentTime) / 1000f)
+        val deltaT = (t - currentTime) / 1000f
+        pos + vel.scale(deltaT) + acc.scale(0.5f * deltaT * deltaT)
       }
-      case head :: tail => {
-        recurCalcPosition(tail, currentPos + currentVel.scale((head.t - currentTime) / 1000f), head.velocity, head.t)
+      case (head: PlaneVelocityChange) :: tail => {
+        val deltaT = (head.t - currentTime) / 1000f
+        recurCalcPosition(tail, 
+                          pos + vel.scale(deltaT) + acc.scale(0.5f * deltaT * deltaT), 
+                          head.velocity, 
+                          acc, 
+                          head.t)
+      }
+      case (head: PlaneAccelerationChange) :: tail => {
+        val deltaT = (head.t - currentTime) / 1000f
+        recurCalcPosition(tail, 
+                          pos + vel.scale(deltaT) + acc.scale(0.5f * deltaT * deltaT), 
+                          vel + acc.scale(deltaT), 
+                          head.acceleration, 
+                          head.t)
+      }
+      case (head: Message) :: tail => {
+        Gdx.app.error(Configuration.LOG, "Wrong message type in plane position case match. Ignored")
+        recurCalcPosition(tail, pos, vel, acc, currentTime)
       }
     }
     
-    recurCalcPosition(planeVelocityEvents(t).sortBy(_.ticks).toList,
-                      initPlaneState.position,
-                      initPlaneState.velocity,
+    val events = planePositionEvents(t)
+    val initPos = if (events.isEmpty) initPlaneState.position else events.last.position
+    val initVel = if (events.isEmpty) initPlaneState.velocity else planeVelocity(events.last.t)
+    val initAcc = if (events.isEmpty) initPlaneState.acceleration else planeAcceleration(events.last.t)
+    val initT = if (events.isEmpty) createTime else events.last.t
+    
+    recurCalcPosition(planePositionAffectingEvents(initT, t).sortBy(_.ticks).toList,
+                      initPos,
+                      initVel,
+                      initAcc,
                       createTime)
-  }
-  
-  /**
-   * The planes angular velocity at time t.
-   */
-  private def planeAngularVelocity(t: Long): Float = {
-    val events = planeAngularVelocityEvents(t)
-    
-    if (events.isEmpty) initPlaneState.angularVelocity else events.last.velocity
-  }
-    
-  /**
-   * The planes angle at time t.
-   */
-  private def planeAngle(t: Long): Float = {
-    @tailrec def recurCalcAngle(velocityChanges: List[PlaneAngularVelocityChange],
-                                currentAngle: Float,
-                                currentAngularVelocity: Float,
-                                currentTime: Long): Float = velocityChanges match {
-      case Nil => {
-        currentAngle + currentAngularVelocity * ((t - currentTime) / 1000f)
-      }
-      case head :: tail => {
-        recurCalcAngle(tail, currentAngle + currentAngularVelocity * ((t - currentTime) / 1000f), head.velocity, head.t)
-      }
-    }
-    
-    val unadjAngle = recurCalcAngle(planeAngularVelocityEvents(t).sortBy(_.ticks).toList,
-                                    initPlaneState.angle, 
-                                    initPlaneState.angularVelocity, 
-                                    createTime) % scala.math.Pi * 2f
-                                    
-    if (unadjAngle < 0f) (unadjAngle + scala.math.Pi * 2f).toFloat else unadjAngle.toFloat
   }
   
   /**
@@ -130,8 +157,9 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
    * occurred.
    */
   def planeState(t: Long): PlaneState =
-    new PlaneState(planePosition(t), planeVelocity(t), 
-                   planeAngle(t), planeAngularVelocity(t), 
+    new PlaneState(planePosition(t), 
+                   planeVelocity(t), 
+                   planeAcceleration(t), 
                    planeOrientation(t))
   
   /**
