@@ -2,8 +2,7 @@ package test.tyler.sopwith
 
 import org.junit.Assert._
 import org.junit.Test
-
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
@@ -17,6 +16,7 @@ import net.tyler.sopwith.PlaneAccelerationChange
 import net.tyler.sopwith.PlanePositionChange
 import net.tyler.sopwith.PlaneState
 import net.tyler.sopwith.PlaneVelocityChange
+import net.tyler.math.CartesianVector2f
 
 /**
  * Test that queries regarding the bombs return the correct set of information.
@@ -25,7 +25,7 @@ class BombMessageTest {
   
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), new ImmutableVector2f(0f, 0f), false)
+  val initialPlaneState = new PlaneState(new CartesianVector2f(10f, 10f), new CartesianVector2f(1f, 2f), new CartesianVector2f(0f, 0f), false)
   
   trait StateTester {
     private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
@@ -42,7 +42,7 @@ class BombMessageTest {
   
   @Test def oneLiveBomb {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 10))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
       
       assertEquals(querier.liveBombs(9).size, 0)
       assertEquals(querier.liveBombs(11).size, 1)
@@ -58,9 +58,9 @@ class BombMessageTest {
   
   @Test def bombsRemaining {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 10))
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 15))
-      messagePassing.send(new BombReleased(new ImmutableVector2f(10f, 100f), 20))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 15))
+      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 20))
       
       assertEquals(querier.bombsRemaining(5), 5)
       assertEquals(querier.bombsRemaining(11), 4)

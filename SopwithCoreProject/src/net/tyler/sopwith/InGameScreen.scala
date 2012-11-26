@@ -1,17 +1,17 @@
 package net.tyler.sopwith
 
-import com.badlogic.gdx.Screen
-import net.tyler.math.ImmutableVector2f
-import com.badlogic.gdx.utils.TimeUtils
-import net.tyler.messaging.MessagingComponent
-import net.tyler.messaging.Message
-import net.tyler.messaging.MessagePassing
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Screen
+import com.badlogic.gdx.utils.TimeUtils
+
+import net.tyler.math.CartesianVector2f
 import net.tyler.math.CartesianVectorConstants
+import net.tyler.messaging.MessagePassing
+import net.tyler.messaging.MessagingComponent
 
 class InGameScreen extends Screen {
 
-  private val initPlaneState = new PlaneState(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
+  private val initPlaneState = new PlaneState(new CartesianVector2f(Configuration.GAME_WIDTH / 2f, Configuration.GAME_HEIGHT / 2f),
                                               CartesianVectorConstants.zero,
                                               CartesianVectorConstants.zero,
                                               false)
@@ -24,7 +24,7 @@ class InGameScreen extends Screen {
   private val messagePassing = new MessagePassing
   private val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
   private val querier = new InGameStateQuerier(initPlaneState,
-                                               List(new Building(new ImmutableVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
+                                               List(new Building(new CartesianVector2f(Configuration.GAME_WIDTH / 2f, 0f))),
                                                Configuration.INIT_BOMBS,
                                                TimeUtils.millis,
                                                messagingComponent)
@@ -57,7 +57,7 @@ class InGameScreen extends Screen {
      */
     Gdx.input.setInputProcessor(inputProcessor)
     
-    messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(20f, -10f), TimeUtils.millis))
+    messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(20f, -10f), TimeUtils.millis))
   }
   
   def hide() = {}

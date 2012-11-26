@@ -8,14 +8,14 @@ package net.tyler.math
  */
 object CollisionDetection {
 
-  def circleCircleOverlapping(c1: ImmutableVector2f, r1: Float,
-                              c2: ImmutableVector2f, r2: Float) = 
+  def circleCircleOverlapping(c1: CartesianVector2f, r1: Float,
+                              c2: CartesianVector2f, r2: Float) = 
     (c2 - c1).length <= r1 + r2
     
-  def circlePointOverlapping(c: ImmutableVector2f, r: Float, p: ImmutableVector2f) =
+  def circlePointOverlapping(c: CartesianVector2f, r: Float, p: CartesianVector2f) =
     circleCircleOverlapping(c, r, p, 0f)
     
-  def circleLineOverlapping(c1: ImmutableVector2f, r1: Float, l1: ImmutableVector2f, l2: ImmutableVector2f) = {
+  def circleLineOverlapping(c1: CartesianVector2f, r1: Float, l1: CartesianVector2f, l2: CartesianVector2f) = {
     val dirOfLine = l2 - l1
     val circleToStart = l1 - c1
     

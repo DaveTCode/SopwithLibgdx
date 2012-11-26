@@ -2,7 +2,7 @@ package net.tyler.sopwith
 
 import scala.annotation.tailrec
 import scala.collection.immutable.List
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.StateQuerier
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.MessagePassing
@@ -33,7 +33,7 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
   /**
    * The planes acceleration at time t.
    */
-  private def planeAcceleration(t: Long): ImmutableVector2f = {
+  private def planeAcceleration(t: Long): CartesianVector2f = {
     val events = planeAccelerationEvents(t)
     
     if (events.isEmpty) initPlaneState.acceleration else events.last.acceleration
@@ -42,11 +42,11 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
   /**
    * The planes velocity at time t.
    */
-  private def planeVelocity(t: Long): ImmutableVector2f = {
+  private def planeVelocity(t: Long): CartesianVector2f = {
     @tailrec def recurCalcVelocity(accelerationChanges: List[PlaneAccelerationChange],
-                                   acc: ImmutableVector2f,
-                                   vel: ImmutableVector2f,
-                                   currentTime: Long): ImmutableVector2f = accelerationChanges match {
+                                   acc: CartesianVector2f,
+                                   vel: CartesianVector2f,
+                                   currentTime: Long): CartesianVector2f = accelerationChanges match {
       case Nil => {
         vel + acc.scale((t - currentTime) / 1000f)
       }
@@ -70,12 +70,12 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
   /**
    * The planes position at time t.
    */
-  private def planePosition(t: Long): ImmutableVector2f = {    
+  private def planePosition(t: Long): CartesianVector2f = {    
     @tailrec def recurCalcPosition(relevantChanges: List[Message],
-                                   pos: ImmutableVector2f,
-                                   vel: ImmutableVector2f,
-                                   acc: ImmutableVector2f,
-                                   currentTime: Long): ImmutableVector2f = relevantChanges match {
+                                   pos: CartesianVector2f,
+                                   vel: CartesianVector2f,
+                                   acc: CartesianVector2f,
+                                   currentTime: Long): CartesianVector2f = relevantChanges match {
       case Nil => {
         val deltaT = (t - currentTime) / 1000f
         pos + vel.scale(deltaT) + acc.scale(0.5f * deltaT * deltaT)
@@ -139,8 +139,8 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
   private def calculateBombState(releasedEvent: BombReleased, t: Long): BombState = {
     val deltaT = (t - releasedEvent.t) / 1000f
     val acc = Configuration.BOMB_ACCELERATION
-    val vel = new ImmutableVector2f(0f, acc * deltaT)
-    val pos = new ImmutableVector2f(releasedEvent.releasePosition.x, 
+    val vel = new CartesianVector2f(0f, acc * deltaT)
+    val pos = new CartesianVector2f(releasedEvent.releasePosition.x, 
                                     releasedEvent.releasePosition.y + vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
     
     new BombState(pos, vel, releasedEvent.releasePosition)

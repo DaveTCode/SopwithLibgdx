@@ -3,16 +3,12 @@ package test.tyler.sopwith
 import org.junit.Assert._
 import org.junit.Test
 
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
-import net.tyler.sopwith.BombDestroyed
-import net.tyler.sopwith.BombReleased
 import net.tyler.sopwith.Building
 import net.tyler.sopwith.BuildingDestroyed
-import net.tyler.sopwith.BuildingDestroyed
 import net.tyler.sopwith.InGameStateQuerier
-import net.tyler.sopwith.PlaneVelocityChange
 
 class BuildingMessageTest {
   
@@ -22,9 +18,9 @@ class BuildingMessageTest {
     val messagePassing = new MessagePassing
     val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
     
-    val building1 = new Building(new ImmutableVector2f(100,0))
-    val building2 = new Building(new ImmutableVector2f(50,-100))
-    val building3 = new Building(new ImmutableVector2f(1,-23))
+    val building1 = new Building(new CartesianVector2f(100,0))
+    val building2 = new Building(new CartesianVector2f(50,-100))
+    val building3 = new Building(new CartesianVector2f(1,-23))
     
     val querier = new InGameStateQuerier(null, List(building1, building2, building3), 5, 0, messagingComponent)
   }

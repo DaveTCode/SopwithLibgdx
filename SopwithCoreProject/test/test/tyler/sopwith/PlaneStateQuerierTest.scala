@@ -2,7 +2,7 @@ package test.tyler.sopwith
 
 import org.junit.Assert._
 import org.junit.Test
-import net.tyler.math.ImmutableVector2f
+import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.sopwith.BombDestroyed
@@ -26,7 +26,7 @@ class PlaneStateQuerierTest {
 
   private val FP_DELTA = 0.01
   
-  val initialPlaneState = new PlaneState(new ImmutableVector2f(10f, 10f), new ImmutableVector2f(1f, 2f), new ImmutableVector2f(0f, 0f), false)
+  val initialPlaneState = new PlaneState(new CartesianVector2f(10f, 10f), new CartesianVector2f(1f, 2f), new CartesianVector2f(0f, 0f), false)
   
   trait StateTester {
     private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
@@ -53,7 +53,7 @@ class PlaneStateQuerierTest {
   
   @Test def singleVelocityChange() {
     new ApplicationTester with StateTester {
-      val newVelocity = new ImmutableVector2f(-1f, -0.5f)
+      val newVelocity = new CartesianVector2f(-1f, -0.5f)
       messagePassing.send(new PlaneVelocityChange(newVelocity, 10))
       
       assertEquals(initialPlaneState.velocity, querier.planeState(9).velocity)
@@ -63,8 +63,8 @@ class PlaneStateQuerierTest {
   
   @Test def velocityChanges() {
     new ApplicationTester with StateTester {
-      messagePassing.send(new PlaneAccelerationChange(new ImmutableVector2f(10f, 0f), 10))
-      messagePassing.send(new PlaneAccelerationChange(new ImmutableVector2f(5f, 5f), 1010))
+      messagePassing.send(new PlaneAccelerationChange(new CartesianVector2f(10f, 0f), 10))
+      messagePassing.send(new PlaneAccelerationChange(new CartesianVector2f(5f, 5f), 1010))
       
       assertEquals(initialPlaneState.velocity, querier.planeState(10).velocity)
       assertEquals(initialPlaneState.velocity.x + 10f, querier.planeState(1010).velocity.x, FP_DELTA)
@@ -73,7 +73,7 @@ class PlaneStateQuerierTest {
       assertEquals(initialPlaneState.velocity.x + 10f + 5f, querier.planeState(2010).velocity.x, FP_DELTA)
       assertEquals(initialPlaneState.velocity.y + 5f, querier.planeState(2010).velocity.y, FP_DELTA)
       
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(7f, 7f), 90))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(7f, 7f), 90))
       
       assertEquals(7f + 1f/100f, querier.planeState(91).velocity.x, FP_DELTA)
       assertEquals(7f, querier.planeState(91).velocity.y, FP_DELTA)
@@ -82,7 +82,7 @@ class PlaneStateQuerierTest {
   
   @Test def positionChangeProgression() {
     new ApplicationTester with StateTester {
-      val newVelocity = new ImmutableVector2f(-10f, 7f)
+      val newVelocity = new CartesianVector2f(-10f, 7f)
       messagePassing.send(new PlaneVelocityChange(newVelocity, 10))
       
       assertEquals(initialPlaneState.position.x + initialPlaneState.velocity.x * 0.009f, querier.planeState(9).position.x, FP_DELTA)
@@ -105,14 +105,14 @@ class PlaneStateQuerierTest {
   
   @Test def planeRotation() {
     new ApplicationTester with StateTester {
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(0f, 1f), 9))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(1f, 1f), 10))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(1f, 0f), 11))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(1f, -1f), 12))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(0f, -1f), 13))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(-1f, -1f), 14))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(-1f, 0f), 15))
-      messagePassing.send(new PlaneVelocityChange(new ImmutableVector2f(-1f, 1f), 16))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(0f, 1f), 9))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(1f, 1f), 10))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(1f, 0f), 11))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(1f, -1f), 12))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(0f, -1f), 13))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, -1f), 14))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 0f), 15))
+      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 1f), 16))
       
       assertEquals(0f, querier.planeState(10).angle, FP_DELTA)
       assertEquals(math.Pi / 4f, querier.planeState(11).angle, FP_DELTA)
