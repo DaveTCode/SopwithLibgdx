@@ -11,5 +11,7 @@ object Configuration {
   
   val BOMB_ACCELERATION = -9.8f
   
+  val BOMB_RADIUS = 5f
+  
   val INIT_BOMBS = 5
 }

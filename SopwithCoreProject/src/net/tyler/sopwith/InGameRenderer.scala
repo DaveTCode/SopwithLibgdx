@@ -6,8 +6,10 @@ import net.tyler.sopwith.TextureManager._
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import net.tyler.sopwith.levels.Level
 
-class InGameRenderer(private val querier: InGameStateQuerier) {
+class InGameRenderer(private val querier: InGameStateQuerier,
+                     private val level: Level) {
 
   private val camera = new OrthographicCamera(Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
   private val spriteBatch = new SpriteBatch(100)
