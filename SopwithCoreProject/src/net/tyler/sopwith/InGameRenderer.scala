@@ -7,17 +7,22 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import net.tyler.sopwith.levels.Level
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 
 class InGameRenderer(private val querier: InGameStateQuerier,
                      private val level: Level) {
 
   private val camera = new OrthographicCamera(Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
   private val spriteBatch = new SpriteBatch(100)
+  private val shapeRenderer = new ShapeRenderer
   
   def renderLevel {
     implicit val renderTime = TimeUtils.millis
     
     renderBackground
+    
+    renderGround
     
     renderBuildings
     
@@ -37,6 +42,17 @@ class InGameRenderer(private val querier: InGameStateQuerier,
     spriteBatch.draw(LevelBackground.texture, 0f, 0f)
     
     spriteBatch.end
+  }
+  
+  private def renderGround(implicit renderTime: Long) {
+    shapeRenderer.begin(ShapeType.Line)
+    
+    shapeRenderer.setColor(1f, 1f, 1f, 1f) // White
+    level.groundSegments.foreach({
+      case (p1, p2) => shapeRenderer.line(p1.x, p1.y, p2.x, p2.y)
+    })
+    
+    shapeRenderer.end
   }
   
   /**
