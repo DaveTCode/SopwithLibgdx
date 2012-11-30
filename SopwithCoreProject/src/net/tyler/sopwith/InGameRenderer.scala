@@ -2,13 +2,13 @@ package net.tyler.sopwith
 
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import net.tyler.sopwith.TextureManager._
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import net.tyler.sopwith.levels.Level
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
+import com.badlogic.gdx.utils.TimeUtils
+
+import net.tyler.sopwith.TextureManager._
+import net.tyler.sopwith.levels.Level
 
 class InGameRenderer(private val querier: InGameStateQuerier,
                      private val level: Level) {
@@ -40,14 +40,22 @@ class InGameRenderer(private val querier: InGameStateQuerier,
     renderBombs
   }
 
+  /**
+   * The camera should be pointing at the plane regardless of where it is on 
+   * the screen. 
+   * 
+   * This translates the camera in 2D so that it always tracks the plane 
+   * coordinates.
+   */
   private def centreCamera(implicit renderTime: Long) {
     val plane = querier.planeState(renderTime)
-    camera.translate(plane.position.x - camera.position.x, plane.position.y - camera.position.y)
+    camera.translate(plane.position.x - camera.position.x, 
+                     plane.position.y - camera.position.y)
   }
 
   /**
-   * Responsible for drawing the background onto the screen. Note that this should be done
-   * before drawing any of the rest of the game.
+   * Responsible for drawing the background onto the screen. Note that this 
+   * should be done before drawing any of the rest of the game.
    */
   private def renderBackground(implicit renderTime: Long) {
     spriteBatch.disableBlending
