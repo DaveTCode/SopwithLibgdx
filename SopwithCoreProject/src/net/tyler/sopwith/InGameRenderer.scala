@@ -14,8 +14,17 @@ class InGameRenderer(private val querier: InGameStateQuerier,
   private val camera = new OrthographicCamera(Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
   private val spriteBatch = new SpriteBatch(100)
   
+  camera.setToOrtho(false, Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
+  
   def renderLevel {
     implicit val renderTime = TimeUtils.millis
+    
+    /*
+     * Centre the camera onto the plane and then update the renderers.
+     */
+    centreCamera
+    camera.update
+    spriteBatch.setProjectionMatrix(camera.combined)
     
     renderBackground
     
@@ -24,6 +33,11 @@ class InGameRenderer(private val querier: InGameStateQuerier,
     renderPlane
     
     renderBombs
+  }
+  
+  private def centreCamera(implicit renderTime: Long) {
+    val plane = querier.planeState(renderTime)
+    camera.translate(plane.position.x - camera.position.x, plane.position.y - camera.position.y)
   }
   
   /**
