@@ -11,6 +11,10 @@ case class PlaneState(val position: CartesianVector2f,
                       val velocity: CartesianVector2f,
                       val acceleration: CartesianVector2f,
                       val flipped: Boolean) {
+  /**
+   * The angle is between 180 (inc) and -180 (not inc) and is in degrees
+   * since that's what libgdx rotation functions use.
+   */
   def angle = MathUtils.radiansToDegrees * velocity.angle
 }
                       
