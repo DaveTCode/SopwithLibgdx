@@ -76,7 +76,9 @@ class InGameRenderer(private val querier: InGameStateQuerier,
     spriteBatch.disableBlending
     spriteBatch.begin
 
-    spriteBatch.draw(LevelBackground.texture, 0f, 0f)
+    spriteBatch.draw(LevelBackground.texture, 
+                     camera.position.x - Configuration.GAME_WIDTH / 2f, 
+                     camera.position.y - Configuration.GAME_HEIGHT / 2f)
 
     spriteBatch.end
   }

@@ -13,7 +13,9 @@ class InGameScreen extends Screen {
 
   private val level = Level1
   
-  private val inGameMessageTypes = List(classOf[PlaneVelocityChange],
+  private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
+                                        classOf[PlaneVelocityChange],
+                                        classOf[PlanePositionChange],
                                         classOf[PlaneOrientationFlip],
                                         classOf[BombDestroyed],
                                         classOf[BombReleased],
