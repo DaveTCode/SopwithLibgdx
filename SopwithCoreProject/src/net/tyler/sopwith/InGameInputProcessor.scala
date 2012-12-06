@@ -65,7 +65,7 @@ class InGameInputProcessor(private val querier: InGameStateQuerier,
     val t = TimeUtils.millis
     
     /*
-     * @TODO - DAT - Should add in check to make sure that the touch is near
+     * TODO - DAT - Should add in check to make sure that the touch is near
      * the plane. Blocked on collision code probably.
      */
     if (querier.bombsRemaining(t) > 0) {
