@@ -26,7 +26,7 @@ case class CartesianVector2f(val x: Float, val y: Float) {
   
   def angle: Float = atan2(y, x).toFloat
   
-  def cap(m: Float): CartesianVector2f = new CartesianVector2f(math.max(x, m), math.max(y, m))
+  def cap(m: Float): CartesianVector2f = new CartesianVector2f(math.min(x, m), math.min(y, m))
   
   def rotate(angle: Float): CartesianVector2f = 
     new CartesianVector2f((x * cos(angle) - y * sin(angle)).asInstanceOf[Float], 
