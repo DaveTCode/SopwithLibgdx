@@ -1,10 +1,12 @@
 package net.tyler.sopwith
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.utils.TimeUtils
 
 import net.tyler.sopwith.TextureManager._
@@ -16,7 +18,15 @@ class InGameRenderer(private val querier: InGameStateQuerier,
   private val camera = new OrthographicCamera(Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
   private val spriteBatch = new SpriteBatch(100)
   private val shapeRenderer = new ShapeRenderer
+  
+  /*
+   * Set the clearing color to black.
+   */
+  Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 
+  /*
+   * The camera should be orthographic fixed to the size of the screen.
+   */
   camera.setToOrtho(false, Configuration.GAME_WIDTH, Configuration.GAME_HEIGHT)
 
   def renderLevel {
@@ -28,6 +38,11 @@ class InGameRenderer(private val querier: InGameStateQuerier,
     centreCamera
     camera.update
     spriteBatch.setProjectionMatrix(camera.combined)
+    
+    /*
+     * Clear the screen to black.
+     */
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     renderBackground
 
@@ -109,9 +124,9 @@ class InGameRenderer(private val querier: InGameStateQuerier,
 
     spriteBatch.draw(new TextureRegion(PlaneTexture.texture),                                  // Texture region
                      plane.position.x, plane.position.y,                                       // Position
-                     PlaneTexture.texture.getWidth / -2f, PlaneTexture.texture.getHeight / -2f,// Origin
+                     PlaneTexture.texture.getWidth / 2f, PlaneTexture.texture.getHeight / 2f,  // Origin
                      PlaneTexture.texture.getWidth, PlaneTexture.texture.getHeight,            // Width, Height
-                     1f, 1f,                                                                   // Scaling factor
+                     1f, if (plane.flipped) -1f else 1f,                                       // Scaling factor
                      plane.angle)                                                              // Rotation angle
 
     spriteBatch.end
