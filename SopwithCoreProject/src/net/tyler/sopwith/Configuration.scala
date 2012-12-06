@@ -9,6 +9,8 @@ object Configuration {
   val PLANE_WIDTH = 99
   val PLANE_HEIGHT = 51
   
+  val MAX_PLANE_VELOCITY = 20f 
+  
   val BOMB_ACCELERATION = -9.8f
   
   val BOMB_RADIUS = 5f
