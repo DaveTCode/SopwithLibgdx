@@ -114,14 +114,14 @@ class PlaneStateQuerierTest {
       messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 0f), 15))
       messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 1f), 16))
       
-      assertEquals(0f, querier.planeState(10).angle, FP_DELTA)
-      assertEquals(math.Pi / 4f, querier.planeState(11).angle, FP_DELTA)
-      assertEquals(math.Pi / 2f, querier.planeState(12).angle, FP_DELTA)
-      assertEquals(3f * math.Pi / 4f, querier.planeState(13).angle, FP_DELTA)
-      assertEquals(math.Pi, querier.planeState(14).angle, FP_DELTA)
-      assertEquals(5f * math.Pi / 4f, querier.planeState(15).angle, FP_DELTA)
-      assertEquals(3f * math.Pi / 2f, querier.planeState(16).angle, FP_DELTA)
-      assertEquals(7f * math.Pi / 4f, querier.planeState(17).angle, FP_DELTA)
+      assertEquals(90f, querier.planeState(10).angle, FP_DELTA)
+      assertEquals(45f, querier.planeState(11).angle, FP_DELTA)
+      assertEquals(0f, querier.planeState(12).angle, FP_DELTA)
+      assertEquals(-45f, querier.planeState(13).angle, FP_DELTA)
+      assertEquals(-90f, querier.planeState(14).angle, FP_DELTA)
+      assertEquals(-135f, querier.planeState(15).angle, FP_DELTA)
+      assertEquals(180f, querier.planeState(16).angle, FP_DELTA)
+      assertEquals(135f, querier.planeState(17).angle, FP_DELTA)
     }
   }
 }
