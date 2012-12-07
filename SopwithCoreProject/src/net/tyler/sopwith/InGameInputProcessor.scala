@@ -61,6 +61,7 @@ class InGameInputProcessor(private val querier: InGameStateQuerier,
         val newAcc = new CartesianVector2f(1f, plane.acceleration.y)
         messagePassing.send(new PlaneAccelerationChange(newAcc, t))
       }
+      case _ => {}
     }
     
     true
