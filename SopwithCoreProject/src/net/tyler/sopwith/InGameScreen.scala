@@ -44,6 +44,13 @@ class InGameScreen extends Screen {
     objectStateUpdater.checkObjectLiveness
     
     /*
+     * Various objects have maximum a velocity. To get around this we check
+     * to see whether any object has exceeded it's maximum velocity each frame
+     * and if so 0 the acceleration. 
+     */
+    objectStateUpdater.capVelocities
+    
+    /*
      * Render the level based on the current game state.
      */
     renderer.renderLevel

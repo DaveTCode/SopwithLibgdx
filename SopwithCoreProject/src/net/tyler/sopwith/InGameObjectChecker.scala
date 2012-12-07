@@ -1,9 +1,11 @@
 package net.tyler.sopwith
 
 import com.badlogic.gdx.utils.TimeUtils
+
+import net.tyler.math.CollisionDetection
+import net.tyler.math.CartesianVectorConstants
 import net.tyler.messaging.MessagePassing
 import net.tyler.sopwith.levels.Level
-import net.tyler.math.CollisionDetection
 
 class InGameObjectChecker(private val querier: InGameStateQuerier,
                           private val messagePassing: MessagePassing,
@@ -17,6 +19,21 @@ class InGameObjectChecker(private val querier: InGameStateQuerier,
     implicit val t = TimeUtils.millis
     
     checkAllBombFloorCollisions
+  }
+  
+  def capVelocities {
+    implicit val t = TimeUtils.millis
+    
+    capPlaneVelocity
+  }
+  
+  private def capPlaneVelocity(implicit t: Long) {
+    val plane = querier.planeState(t)
+    
+    if (plane.velocity.length > Configuration.MAX_PLANE_VELOCITY &&
+        plane.acceleration != CartesianVectorConstants.zero) {
+      messagePassing.send(new PlaneAccelerationChange(CartesianVectorConstants.zero, t))
+    }
   }
   
   /**

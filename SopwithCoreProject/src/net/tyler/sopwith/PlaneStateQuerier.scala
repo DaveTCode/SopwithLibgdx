@@ -7,6 +7,12 @@ import scala.annotation.tailrec
 import net.tyler.messaging.Message
 import com.badlogic.gdx.Gdx
 
+/**
+ * This class provides all querying functions required against the plane data.
+ * 
+ * This includes the ability to calculate position, velocity etc at any
+ * given time t.
+ */
 class PlaneStateQuerier(initPlaneState: PlaneState, 
                         createTime: Long, 
                         messagingComponent: MessagingComponent) extends StateQuerier(messagingComponent) {
@@ -44,14 +50,14 @@ class PlaneStateQuerier(initPlaneState: PlaneState,
       case head :: tail => {
         recurCalcVelocity(tail, 
                           head.acceleration, 
-                          (vel + acc.scale((head.t - currentTime) / 1000f)).cap(Configuration.MAX_PLANE_VELOCITY), 
+                          vel + acc.scale((head.t - currentTime) / 1000f), 
                           head.t)
       }
     }
     
     val events = planeVelocityEvents(t)
     
-    val initVel = (if (events.isEmpty) initPlaneState.velocity else events.last.velocity).cap(Configuration.MAX_PLANE_VELOCITY)
+    val initVel = if (events.isEmpty) initPlaneState.velocity else events.last.velocity
     val initAcc = if (events.isEmpty) initPlaneState.acceleration else planeAcceleration(events.last.t)
     val initT = if (events.isEmpty) createTime else events.last.t
     
