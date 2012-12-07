@@ -38,6 +38,7 @@ class InGameRenderer(private val querier: InGameStateQuerier,
     centreCamera
     camera.update
     spriteBatch.setProjectionMatrix(camera.combined)
+    shapeRenderer.setProjectionMatrix(camera.combined)
     
     /*
      * Clear the screen to black.
