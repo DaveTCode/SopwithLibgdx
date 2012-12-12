@@ -58,7 +58,7 @@ class InGameObjectChecker(private val querier: InGameStateQuerier,
           CollisionDetection.circleLineOverlapping(bomb.position, Configuration.BOMB_RADIUS, p1, p2)
         }
       })) {
-      messagePassing.send(new BombDestroyed(bomb.releasePosition, t))
+      messagePassing.send(new BombDestroyed(bomb.releaseTime, t))
     } 
   }
 }

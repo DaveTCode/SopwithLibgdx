@@ -27,7 +27,7 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
    */
   def liveBombs(t: Long): Iterable[BombState] = {
     val validBombs = bombReleaseEvents(t).filter((event: BombReleased) => {
-      bombDestroyedEvents(t).count(_.releasePosition == event.releasePosition) == 0
+      bombDestroyedEvents(t).count(_.releaseTime == event.t) == 0
     })
     
     validBombs.map(calculateBombState(_, t))
@@ -43,8 +43,8 @@ class InGameStateQuerier(val initPlaneState: PlaneState,
     val vel = new CartesianVector2f(0f, acc * deltaT)
     val pos = new CartesianVector2f(releasedEvent.releasePosition.x, 
                                     releasedEvent.releasePosition.y + vel.y * deltaT + 0.5f * acc * deltaT * deltaT)
-    
-    new BombState(pos, vel, releasedEvent.releasePosition)
+
+    new BombState(pos, vel, releasedEvent.t)
   }
   
   /**

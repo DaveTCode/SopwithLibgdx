@@ -11,4 +11,4 @@ case class PlaneOrientationFlip(t: Long) extends Message(t)
 case class BuildingDestroyed(val building: Building, t: Long) extends Message(t)
 
 case class BombReleased(val releasePosition: CartesianVector2f, t: Long) extends Message(t)
-case class BombDestroyed(val releasePosition: CartesianVector2f, t: Long) extends Message(t)
+case class BombDestroyed(val releaseTime: Long, t: Long) extends Message(t)
