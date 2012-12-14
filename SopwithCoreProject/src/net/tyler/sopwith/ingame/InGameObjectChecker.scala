@@ -1,4 +1,4 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
 import com.badlogic.gdx.utils.TimeUtils
 
@@ -6,6 +6,7 @@ import net.tyler.math.CollisionDetection
 import net.tyler.math.CartesianVectorConstants
 import net.tyler.messaging.MessagePassing
 import net.tyler.sopwith.levels.Level
+import net.tyler.sopwith.Configuration
 
 class InGameObjectChecker(private val querier: InGameStateQuerier,
                           private val messagePassing: MessagePassing,

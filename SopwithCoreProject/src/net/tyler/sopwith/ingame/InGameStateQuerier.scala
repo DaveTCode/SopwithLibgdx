@@ -1,13 +1,9 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
-import scala.annotation.tailrec
-import scala.collection.immutable.List
 import net.tyler.math.CartesianVector2f
-import net.tyler.messaging.StateQuerier
 import net.tyler.messaging.MessagingComponent
-import net.tyler.messaging.MessagePassing
-import net.tyler.messaging.Message
-import com.badlogic.gdx.Gdx
+import net.tyler.messaging.StateQuerier
+import net.tyler.sopwith.Configuration
 
 class InGameStateQuerier(val initPlaneState: PlaneState, 
                          val initBuildings: Iterable[Building],

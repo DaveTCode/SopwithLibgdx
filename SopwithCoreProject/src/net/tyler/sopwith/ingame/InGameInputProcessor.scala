@@ -1,12 +1,13 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input.Peripheral
-import net.tyler.messaging.MessagePassing
-import com.badlogic.gdx.utils.TimeUtils
-import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Input.Keys
+import com.badlogic.gdx.Input.Peripheral
+import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.utils.TimeUtils
+
 import net.tyler.math.CartesianVector2f
+import net.tyler.messaging.MessagePassing
 
 /**
  * Class is responsible for handling input device polling and converting the

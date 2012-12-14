@@ -1,12 +1,12 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.utils.TimeUtils
-import net.tyler.math.CartesianVector2f
-import net.tyler.math.CartesianVectorConstants
+
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
+import net.tyler.sopwith.Configuration
 import net.tyler.sopwith.levels.Level1
 
 class InGameScreen extends Screen {
@@ -31,7 +31,7 @@ class InGameScreen extends Screen {
   private val inputProcessor = new InGameInputProcessor(querier, messagePassing)
   private val objectStateUpdater = new InGameObjectChecker(querier, messagePassing, level) 
   
-  def render(dt: Float) {
+  override def render(dt: Float) {
     /*
      * Handle changes to the game state based on polling user input. Event based
      * input is handled internally by libgdx (i.e. all mouse/key events).
@@ -56,7 +56,7 @@ class InGameScreen extends Screen {
     renderer.renderLevel
   }
   
-  def show() = {
+  override def show() = {
     /*
      * Event based input processing goes through this. Polling is done for other
      * types and is done in the render/update loop.
@@ -64,13 +64,13 @@ class InGameScreen extends Screen {
     Gdx.input.setInputProcessor(inputProcessor)
   }
   
-  def hide() = {}
+  override def hide() = {}
   
-  def resize(width: Int, height: Int) = {}
+  override def resize(width: Int, height: Int) = {}
   
-  def pause() = {}
+  override def pause() = {}
   
-  def resume() = {}
+  override def resume() = {}
   
-  def dispose() = {} 
+  override def dispose() = {} 
 }

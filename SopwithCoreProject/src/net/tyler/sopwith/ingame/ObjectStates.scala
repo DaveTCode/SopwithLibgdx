@@ -1,7 +1,8 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
+
+import com.badlogic.gdx.math.MathUtils
 
 import net.tyler.math.CartesianVector2f
-import com.badlogic.gdx.math.MathUtils
 
 case class BombState(val position: CartesianVector2f, 
                      val velocity: CartesianVector2f, 

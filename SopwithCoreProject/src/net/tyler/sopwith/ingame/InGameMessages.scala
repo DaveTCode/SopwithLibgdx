@@ -1,4 +1,4 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
 import net.tyler.messaging.Message
 import net.tyler.math.CartesianVector2f

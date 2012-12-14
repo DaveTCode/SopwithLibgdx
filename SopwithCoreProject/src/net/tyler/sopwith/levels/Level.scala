@@ -1,7 +1,7 @@
 package net.tyler.sopwith.levels
 
-import net.tyler.sopwith.PlaneState
-import net.tyler.sopwith.Building
+import net.tyler.sopwith.ingame.PlaneState
+import net.tyler.sopwith.ingame.Building
 import net.tyler.math.CartesianVector2f
 import net.tyler.math.CartesianVectorConstants
 import net.tyler.math.CartesianVector2f

@@ -4,7 +4,7 @@ import org.junit.Assert._
 import org.junit.Test
 import net.tyler.sopwith.levels.Level
 import net.tyler.math.CartesianVectorConstants
-import net.tyler.sopwith.PlaneState
+import net.tyler.sopwith.ingame.PlaneState
 import net.tyler.math.CartesianVector2f
 
 /**

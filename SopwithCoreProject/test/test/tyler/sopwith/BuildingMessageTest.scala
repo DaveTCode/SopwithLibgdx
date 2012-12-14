@@ -6,9 +6,9 @@ import org.junit.Test
 import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
-import net.tyler.sopwith.Building
-import net.tyler.sopwith.BuildingDestroyed
-import net.tyler.sopwith.InGameStateQuerier
+import net.tyler.sopwith.ingame.Building
+import net.tyler.sopwith.ingame.BuildingDestroyed
+import net.tyler.sopwith.ingame.InGameStateQuerier
 
 class BuildingMessageTest {
   

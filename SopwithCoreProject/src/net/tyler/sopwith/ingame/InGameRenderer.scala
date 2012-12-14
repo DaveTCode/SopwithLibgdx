@@ -1,15 +1,20 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
-import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.utils.TimeUtils
 
-import net.tyler.sopwith.TextureManager._
+import net.tyler.sopwith.Configuration
+import net.tyler.sopwith.TextureManager.BombTexture
+import net.tyler.sopwith.TextureManager.BuildingDestroyedTexture
+import net.tyler.sopwith.TextureManager.BuildingLiveTexture
+import net.tyler.sopwith.TextureManager.LevelBackground
+import net.tyler.sopwith.TextureManager.PlaneTexture
 import net.tyler.sopwith.levels.Level
 
 class InGameRenderer(private val querier: InGameStateQuerier,

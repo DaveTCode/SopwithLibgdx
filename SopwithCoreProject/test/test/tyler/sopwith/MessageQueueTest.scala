@@ -9,10 +9,10 @@ import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
-import net.tyler.sopwith.BombDestroyed
-import net.tyler.sopwith.BombReleased
-import net.tyler.sopwith.BuildingDestroyed
-import net.tyler.sopwith.PlaneVelocityChange
+import net.tyler.sopwith.ingame.BombDestroyed
+import net.tyler.sopwith.ingame.BombReleased
+import net.tyler.sopwith.ingame.BuildingDestroyed
+import net.tyler.sopwith.ingame.PlaneVelocityChange
 
 /**
  * Test class for checking that the right set of messages are returned from the

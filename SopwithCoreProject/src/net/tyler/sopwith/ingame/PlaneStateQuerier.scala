@@ -1,4 +1,4 @@
-package net.tyler.sopwith
+package net.tyler.sopwith.ingame
 
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
@@ -6,6 +6,7 @@ import net.tyler.math.CartesianVector2f
 import scala.annotation.tailrec
 import net.tyler.messaging.Message
 import com.badlogic.gdx.Gdx
+import net.tyler.sopwith.Configuration
 
 /**
  * This class provides all querying functions required against the plane data.

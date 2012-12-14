@@ -2,6 +2,9 @@ package net.tyler.sopwith
 
 object Configuration {
   val LOG = "Sopwith"
+    
+  val NO_SPLASH = false
+  val SPLASH_SCREEN_MS = 2000
   
   val GAME_WIDTH = 480
   val GAME_HEIGHT = 320

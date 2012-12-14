@@ -6,16 +6,16 @@ import net.tyler.math.CartesianVector2f
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.messaging.StateQuerier
-import net.tyler.sopwith.BombDestroyed
-import net.tyler.sopwith.BombReleased
-import net.tyler.sopwith.BombState
-import net.tyler.sopwith.BuildingDestroyed
+import net.tyler.sopwith.ingame.BombDestroyed
+import net.tyler.sopwith.ingame.BombReleased
+import net.tyler.sopwith.ingame.BombState
+import net.tyler.sopwith.ingame.BuildingDestroyed
 import net.tyler.sopwith.Configuration
-import net.tyler.sopwith.InGameStateQuerier
-import net.tyler.sopwith.PlaneAccelerationChange
-import net.tyler.sopwith.PlanePositionChange
-import net.tyler.sopwith.PlaneState
-import net.tyler.sopwith.PlaneVelocityChange
+import net.tyler.sopwith.ingame.InGameStateQuerier
+import net.tyler.sopwith.ingame.PlaneAccelerationChange
+import net.tyler.sopwith.ingame.PlanePositionChange
+import net.tyler.sopwith.ingame.PlaneState
+import net.tyler.sopwith.ingame.PlaneVelocityChange
 import net.tyler.math.CartesianVector2f
 
 /**
