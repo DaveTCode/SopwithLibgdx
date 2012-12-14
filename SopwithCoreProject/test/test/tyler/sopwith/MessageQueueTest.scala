@@ -46,7 +46,7 @@ class MessageQueueTest {
       val pos = new CartesianVector2f(-100f, -100f)
       
       messagePassing.send(new BombReleased(pos, 1029478))
-      messagePassing.send(new BombDestroyed(pos, 98123))
+      messagePassing.send(new BombDestroyed(1029478, 2029478))
       
       assertEquals(stateQuerier.messageEvents[BombReleased](99999999).size, 1)
       assertEquals(stateQuerier.messageEvents[BombDestroyed](99999999).size, 1)

@@ -5,7 +5,8 @@ import com.badlogic.gdx.math.MathUtils
 
 case class BombState(val position: CartesianVector2f, 
                      val velocity: CartesianVector2f, 
-                     val releasePosition: CartesianVector2f)
+                     //val releasePosition: CartesianVector2f,
+                     val releaseTime: Long)
 
 case class PlaneState(val position: CartesianVector2f,
                       val velocity: CartesianVector2f,

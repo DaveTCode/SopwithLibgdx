@@ -20,9 +20,9 @@ object CollisionDetection {
     val circleToStart = l1 - c1
     
     val a = dirOfLine dot dirOfLine
-    val b = circleToStart.scale(2f) dot dirOfLine
-    val c = (circleToStart dot circleToStart) - (c1.y * c1.y)
-    val discriminant = b * b - 4 * a * c
+    val b = (circleToStart dot dirOfLine) * 2f
+    val c = (circleToStart dot circleToStart) - (r1 * r1)
+    val discriminant = b * b - 4f * a * c
     
     if (discriminant >= 0) {
       val rootDiscriminant = scala.math.sqrt(discriminant)
