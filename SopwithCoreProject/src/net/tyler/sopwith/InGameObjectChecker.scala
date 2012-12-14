@@ -27,6 +27,10 @@ class InGameObjectChecker(private val querier: InGameStateQuerier,
     capPlaneVelocity
   }
   
+  /**
+   * The plane has a maximum velocity. Once it hits that we want to prevent
+   * it accelerating any faster.
+   */
   private def capPlaneVelocity(implicit t: Long) {
     val plane = querier.planeState(t)
     
