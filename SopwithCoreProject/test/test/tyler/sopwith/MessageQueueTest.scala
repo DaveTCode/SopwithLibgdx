@@ -22,8 +22,7 @@ class MessageQueueTest {
   trait StateTester {
     private val inGameMessageTypes = List(classOf[BombDestroyed],
                                           classOf[BombReleased])
-    val messagePassing = new MessagePassing
-    val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
+    val messagingComponent = new MessagingComponent(inGameMessageTypes)
     val stateQuerier = new StateQuerier(messagingComponent) {}
   }
   
@@ -31,7 +30,7 @@ class MessageQueueTest {
     new ApplicationTester with StateTester {
       val pos = new CartesianVector2f(-100f, -100f)
       
-      messagePassing.send(new BombReleased(pos, 1959203))
+      messagingComponent.send(new BombReleased(pos, 1959203))
       assertEquals(stateQuerier.eventsPostTickVal(0), messagingComponent.Buffer)
       assertEquals(stateQuerier.eventsPostTickVal(9999999).size, 0)
       assertEquals(stateQuerier.eventsPostTickVal(1959203).size, 0)
@@ -45,8 +44,8 @@ class MessageQueueTest {
     new ApplicationTester with StateTester {
       val pos = new CartesianVector2f(-100f, -100f)
       
-      messagePassing.send(new BombReleased(pos, 1029478))
-      messagePassing.send(new BombDestroyed(1029478, 2029478))
+      messagingComponent.send(new BombReleased(pos, 1029478))
+      messagingComponent.send(new BombDestroyed(1029478, 2029478))
       
       assertEquals(stateQuerier.messageEvents[BombReleased](99999999).size, 1)
       assertEquals(stateQuerier.messageEvents[BombDestroyed](99999999).size, 1)
@@ -60,9 +59,9 @@ class MessageQueueTest {
       val msg2 = new BombReleased(pos, 10923)
       val msg3 = new BombReleased(pos, 123)
       
-      messagePassing.send(msg1)
-      messagePassing.send(msg2)
-      messagePassing.send(msg3)
+      messagingComponent.send(msg1)
+      messagingComponent.send(msg2)
+      messagingComponent.send(msg3)
       
       assertEquals(ArrayBuffer(msg1, msg2, msg3), stateQuerier.messageEvents[BombReleased](11111))
     }

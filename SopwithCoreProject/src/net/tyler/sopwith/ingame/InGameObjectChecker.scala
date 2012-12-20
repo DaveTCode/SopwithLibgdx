@@ -4,12 +4,12 @@ import com.badlogic.gdx.utils.TimeUtils
 
 import net.tyler.math.CollisionDetection
 import net.tyler.math.CartesianVectorConstants
-import net.tyler.messaging.MessagePassing
+import net.tyler.messaging.MessagingComponent
 import net.tyler.sopwith.levels.Level
 import net.tyler.sopwith.Configuration
 
 class InGameObjectChecker(private val querier: InGameStateQuerier,
-                          private val messagePassing: MessagePassing,
+                          private val messagingComponent: MessagingComponent,
                           private val level: Level) {
 
   /**
@@ -37,7 +37,7 @@ class InGameObjectChecker(private val querier: InGameStateQuerier,
     
     if (plane.velocity.length > Configuration.MAX_PLANE_VELOCITY &&
         plane.acceleration != CartesianVectorConstants.zero) {
-      messagePassing.send(new PlaneAccelerationChange(CartesianVectorConstants.zero, t))
+      messagingComponent.send(new PlaneAccelerationChange(CartesianVectorConstants.zero, t))
     }
   }
   
@@ -63,7 +63,7 @@ class InGameObjectChecker(private val querier: InGameStateQuerier,
           CollisionDetection.circleLineOverlapping(bomb.position, Configuration.BOMB_RADIUS, p1, p2)
         }
       })) {
-      messagePassing.send(new BombDestroyed(bomb.releaseTime, t))
+      messagingComponent.send(new BombDestroyed(bomb.releaseTime, t))
     } 
   }
 }

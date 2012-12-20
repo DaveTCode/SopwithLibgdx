@@ -2,7 +2,9 @@ package net.tyler.messaging
 
 import scala.collection.mutable.ArrayBuffer
 
-class MessagingComponent(val messagePasser: MessagePassing, messageTypes: List[Class[_ <: Message]]) {
+class MessagingComponent(messageTypes: List[Class[_ <: Message]]) {
+  
+  private val messagePasser = new MessagePassing
   
   /*
    * Register with all of the valid message types for this component.
@@ -20,4 +22,9 @@ class MessagingComponent(val messagePasser: MessagePassing, messageTypes: List[C
    * them in the buffer but that can be overriden if required.
    */
   def receive(message: Message) { Buffer += message }
+  
+  /**
+   * Send a single message to the message passing infrastructure.
+   */
+  def send(message: Message) { messagePasser.send(message) }
 }

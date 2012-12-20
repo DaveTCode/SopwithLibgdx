@@ -15,8 +15,7 @@ class BuildingMessageTest {
   trait StateTester {
     private val inGameMessageTypes = List(classOf[BuildingDestroyed])
     
-    val messagePassing = new MessagePassing
-    val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
+    val messagingComponent = new MessagingComponent(inGameMessageTypes)
     
     val building1 = new Building(new CartesianVector2f(100,0))
     val building2 = new Building(new CartesianVector2f(50,-100))
@@ -36,9 +35,9 @@ class BuildingMessageTest {
   
   @Test def testBuildingDestruction {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BuildingDestroyed(building1, 110))
-      messagePassing.send(new BuildingDestroyed(building2, 210))
-      messagePassing.send(new BuildingDestroyed(building3, 310))
+      messagingComponent.send(new BuildingDestroyed(building1, 110))
+      messagingComponent.send(new BuildingDestroyed(building2, 210))
+      messagingComponent.send(new BuildingDestroyed(building3, 310))
       
       val buildingsAt100 = querier.buildings(100)
       assertEquals(buildingsAt100.size, 3)

@@ -9,6 +9,6 @@ import com.badlogic.gdx.Game
 class SopwithGame extends Game {
 
   def create() {
-    setScreen(new SplashScreen)
+    setScreen(new GameScreen)
   }
 }

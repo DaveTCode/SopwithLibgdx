@@ -11,12 +11,21 @@ class GameStateQuerier(messagingComponent: MessagingComponent) extends StateQuer
   def getState(t: Long): GameState = {
     val appStartEvents = messageEvents[ApplicationStart](t)
     if (appStartEvents.size > 0) {
-      allEventsBackwards(t) foreach { 
-        case _: SplashScreenStart => StateSplashScreen()
-        case _: 
+      val gameStateEvents = allEventsBackwards(t) collect  { 
+        case m if (m.getClass == SplashScreenStart || 
+                   m.getClass == GameStarted || 
+                   m.getClass == GamePaused || 
+                   m.getClass == GameResumed) => m
+      } 
+      
+      gameStateEvents.last match {
+        case _: SplashScreenStart => StateSplashScreen
+        case _: GameStarted => StateInGameRunning
+        case _: GamePaused => StateInGamePaused
+        case _: GameResumed => StateInGameRunning
       }
     }
     
-    StateStarting()
+    StateSplashScreen
   }
 }

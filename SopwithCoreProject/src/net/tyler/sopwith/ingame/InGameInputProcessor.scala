@@ -5,16 +5,15 @@ import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.Input.Peripheral
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.utils.TimeUtils
-
 import net.tyler.math.CartesianVector2f
-import net.tyler.messaging.MessagePassing
+import net.tyler.messaging.MessagingComponent
 
 /**
  * Class is responsible for handling input device polling and converting the
  * results into state change messages to pass back to the game model.
  */
 class InGameInputProcessor(private val querier: InGameStateQuerier, 
-                           private val messagePassing: MessagePassing) extends InputProcessor {
+                           private val messagingComponent: MessagingComponent) extends InputProcessor {
 
   /**
    * Called once per render loop to process any new input and convert it into
@@ -43,24 +42,24 @@ class InGameInputProcessor(private val querier: InGameStateQuerier,
     
     keyCode match {
       case Keys.SPACE => {
-        messagePassing.send(new PlaneOrientationFlip(t))
+        messagingComponent.send(new PlaneOrientationFlip(t))
       }
       case Keys.UP => {
         val newAcc = new CartesianVector2f(plane.acceleration.x, 1f)
-        messagePassing.send(new PlaneAccelerationChange(newAcc, t))
+        messagingComponent.send(new PlaneAccelerationChange(newAcc, t))
 
       }
       case Keys.DOWN => {
         val newAcc = new CartesianVector2f(plane.acceleration.x, -1f)
-        messagePassing.send(new PlaneAccelerationChange(newAcc, t))
+        messagingComponent.send(new PlaneAccelerationChange(newAcc, t))
       }
       case Keys.LEFT => {
         val newAcc = new CartesianVector2f(-1f, plane.acceleration.y)
-        messagePassing.send(new PlaneAccelerationChange(newAcc, t))
+        messagingComponent.send(new PlaneAccelerationChange(newAcc, t))
       }
       case Keys.RIGHT => {
         val newAcc = new CartesianVector2f(1f, plane.acceleration.y)
-        messagePassing.send(new PlaneAccelerationChange(newAcc, t))
+        messagingComponent.send(new PlaneAccelerationChange(newAcc, t))
       }
       case _ => {}
     }
@@ -88,7 +87,7 @@ class InGameInputProcessor(private val querier: InGameStateQuerier,
      * the plane. Blocked on collision code probably.
      */
     if (querier.bombsRemaining(t) > 0) {
-      messagePassing.send(new BombReleased(querier.planeState(t).position, t))
+      messagingComponent.send(new BombReleased(querier.planeState(t).position, t))
     }
     
     /*

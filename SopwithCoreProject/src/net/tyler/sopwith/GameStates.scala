@@ -2,8 +2,7 @@ package net.tyler.sopwith
 
 abstract class GameState {}
 
-case class StateStarting() extends GameState()
-case class StateSplashScreen() extends GameState()
-case class StateInGamePaused() extends GameState()
-case class StateInGameRunning() extends GameState()
+case object StateSplashScreen extends GameState
+case object StateInGamePaused extends GameState
+case object StateInGameRunning extends GameState
   
