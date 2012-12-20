@@ -36,8 +36,7 @@ class PlaneStateQuerierTest {
                                           classOf[BombDestroyed],
                                           classOf[BombReleased],
                                           classOf[BuildingDestroyed])
-    val messagePassing = new MessagePassing
-    val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
+    val messagingComponent = new MessagingComponent(inGameMessageTypes)
     
     val querier = new InGameStateQuerier(initialPlaneState, List(), 5, 0, messagingComponent)
   }
@@ -54,7 +53,7 @@ class PlaneStateQuerierTest {
   @Test def singleVelocityChange() {
     new ApplicationTester with StateTester {
       val newVelocity = new CartesianVector2f(-1f, -0.5f)
-      messagePassing.send(new PlaneVelocityChange(newVelocity, 10))
+      messagingComponent.send(new PlaneVelocityChange(newVelocity, 10))
       
       assertEquals(initialPlaneState.velocity, querier.planeState(9).velocity)
       assertEquals(newVelocity, querier.planeState(11).velocity)
@@ -63,8 +62,8 @@ class PlaneStateQuerierTest {
   
   @Test def velocityChanges() {
     new ApplicationTester with StateTester {
-      messagePassing.send(new PlaneAccelerationChange(new CartesianVector2f(10f, 0f), 10))
-      messagePassing.send(new PlaneAccelerationChange(new CartesianVector2f(5f, 5f), 1010))
+      messagingComponent.send(new PlaneAccelerationChange(new CartesianVector2f(10f, 0f), 10))
+      messagingComponent.send(new PlaneAccelerationChange(new CartesianVector2f(5f, 5f), 1010))
       
       assertEquals(initialPlaneState.velocity, querier.planeState(10).velocity)
       assertEquals(initialPlaneState.velocity.x + 10f, querier.planeState(1010).velocity.x, FP_DELTA)
@@ -73,7 +72,7 @@ class PlaneStateQuerierTest {
       assertEquals(initialPlaneState.velocity.x + 10f + 5f, querier.planeState(2010).velocity.x, FP_DELTA)
       assertEquals(initialPlaneState.velocity.y + 5f, querier.planeState(2010).velocity.y, FP_DELTA)
       
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(7f, 7f), 90))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(7f, 7f), 90))
       
       assertEquals(7f + 1f/100f, querier.planeState(91).velocity.x, FP_DELTA)
       assertEquals(7f, querier.planeState(91).velocity.y, FP_DELTA)
@@ -83,7 +82,7 @@ class PlaneStateQuerierTest {
   @Test def positionChangeProgression() {
     new ApplicationTester with StateTester {
       val newVelocity = new CartesianVector2f(-10f, 7f)
-      messagePassing.send(new PlaneVelocityChange(newVelocity, 10))
+      messagingComponent.send(new PlaneVelocityChange(newVelocity, 10))
       
       assertEquals(initialPlaneState.position.x + initialPlaneState.velocity.x * 0.009f, querier.planeState(9).position.x, FP_DELTA)
       assertEquals(initialPlaneState.position.y + initialPlaneState.velocity.y * 0.009f, querier.planeState(9).position.y, FP_DELTA)
@@ -96,7 +95,7 @@ class PlaneStateQuerierTest {
   
   @Test def planeOrientation() {
     new ApplicationTester with StateTester {
-      messagePassing.send(new PlaneOrientationFlip(10))
+      messagingComponent.send(new PlaneOrientationFlip(10))
       
       assertEquals(false, querier.planeState(9).flipped)
       assertEquals(true, querier.planeState(11).flipped)
@@ -105,14 +104,14 @@ class PlaneStateQuerierTest {
   
   @Test def planeRotation() {
     new ApplicationTester with StateTester {
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(0f, 1f), 9))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(1f, 1f), 10))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(1f, 0f), 11))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(1f, -1f), 12))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(0f, -1f), 13))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, -1f), 14))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 0f), 15))
-      messagePassing.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 1f), 16))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(0f, 1f), 9))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(1f, 1f), 10))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(1f, 0f), 11))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(1f, -1f), 12))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(0f, -1f), 13))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(-1f, -1f), 14))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 0f), 15))
+      messagingComponent.send(new PlaneVelocityChange(new CartesianVector2f(-1f, 1f), 16))
       
       assertEquals(90f, querier.planeState(10).angle, FP_DELTA)
       assertEquals(45f, querier.planeState(11).angle, FP_DELTA)

@@ -11,6 +11,7 @@ object TextureManager {
   case object PlaneTexture extends InternalTexture("images/biplane.png")
   case object BuildingLiveTexture extends InternalTexture("images/building_live.png")
   case object BuildingDestroyedTexture extends InternalTexture("images/building_destroyed.png")
+  case object SplashScreenBackground extends InternalTexture("images/splash_screen.png")
   
   protected abstract class InternalTexture(filename: String) {
     

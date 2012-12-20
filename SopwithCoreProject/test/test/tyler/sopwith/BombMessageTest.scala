@@ -34,15 +34,14 @@ class BombMessageTest {
                                           classOf[BombDestroyed],
                                           classOf[BombReleased],
                                           classOf[BuildingDestroyed])
-    val messagePassing = new MessagePassing
-    val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
+    val messagingComponent = new MessagingComponent(inGameMessageTypes)
     
     val querier = new InGameStateQuerier(initialPlaneState, List(), 5, 0, messagingComponent)
   }
   
   @Test def oneLiveBomb {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
+      messagingComponent.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
       
       assertEquals(querier.liveBombs(9).size, 0)
       assertEquals(querier.liveBombs(11).size, 1)
@@ -58,9 +57,9 @@ class BombMessageTest {
   
   @Test def bombsRemaining {
     new ApplicationTester with StateTester {
-      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
-      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 15))
-      messagePassing.send(new BombReleased(new CartesianVector2f(10f, 100f), 20))
+      messagingComponent.send(new BombReleased(new CartesianVector2f(10f, 100f), 10))
+      messagingComponent.send(new BombReleased(new CartesianVector2f(10f, 100f), 15))
+      messagingComponent.send(new BombReleased(new CartesianVector2f(10f, 100f), 20))
       
       assertEquals(querier.bombsRemaining(5), 5)
       assertEquals(querier.bombsRemaining(11), 4)

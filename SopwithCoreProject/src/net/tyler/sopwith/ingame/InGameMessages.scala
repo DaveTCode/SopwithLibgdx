@@ -12,3 +12,13 @@ case class BuildingDestroyed(val building: Building, t: Long) extends Message(t)
 
 case class BombReleased(val releasePosition: CartesianVector2f, t: Long) extends Message(t)
 case class BombDestroyed(val releaseTime: Long, t: Long) extends Message(t)
+
+object InGameMessages {
+  val types = List(classOf[PlaneAccelerationChange],
+                   classOf[PlaneVelocityChange],
+                   classOf[PlanePositionChange],
+                   classOf[PlaneOrientationFlip],
+                   classOf[BombDestroyed],
+                   classOf[BombReleased],
+                   classOf[BuildingDestroyed])
+}

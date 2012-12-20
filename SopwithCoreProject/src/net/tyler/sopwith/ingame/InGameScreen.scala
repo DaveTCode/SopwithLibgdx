@@ -3,33 +3,25 @@ package net.tyler.sopwith.ingame
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.utils.TimeUtils
-
 import net.tyler.messaging.MessagePassing
 import net.tyler.messaging.MessagingComponent
 import net.tyler.sopwith.Configuration
 import net.tyler.sopwith.levels.Level1
+import com.badlogic.gdx.Game
 
-class InGameScreen extends Screen {
+class InGameScreen(game: Game) extends Screen {
 
   private val level = Level1
   
-  private val inGameMessageTypes = List(classOf[PlaneAccelerationChange],
-                                        classOf[PlaneVelocityChange],
-                                        classOf[PlanePositionChange],
-                                        classOf[PlaneOrientationFlip],
-                                        classOf[BombDestroyed],
-                                        classOf[BombReleased],
-                                        classOf[BuildingDestroyed])
-  private val messagePassing = new MessagePassing
-  private val messagingComponent = new MessagingComponent(messagePassing, inGameMessageTypes)
+  private val messagingComponent = new MessagingComponent(InGameMessages.types)
   private val querier = new InGameStateQuerier(level.plane,
                                                level.buildings,
                                                Configuration.INIT_BOMBS,
                                                TimeUtils.millis,
                                                messagingComponent)
   private val renderer = new InGameRenderer(querier, level)
-  private val inputProcessor = new InGameInputProcessor(querier, messagePassing)
-  private val objectStateUpdater = new InGameObjectChecker(querier, messagePassing, level) 
+  private val inputProcessor = new InGameInputProcessor(querier, messagingComponent)
+  private val objectStateUpdater = new InGameObjectChecker(querier, messagingComponent, level) 
   
   override def render(dt: Float) {
     /*
